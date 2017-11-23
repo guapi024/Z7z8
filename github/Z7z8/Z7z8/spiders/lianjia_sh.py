@@ -3,9 +3,11 @@
 __author__ : renou
 '''
 
+import random
+import time
+
 import scrapy
-import  re,os,time,datetime,random
-from Z7z8.items import  lianjia_ershoufang
+
 
 class lianjia_sh_Spider(scrapy.Spider):
     name = "lianjia_sh"
