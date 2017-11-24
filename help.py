@@ -5,13 +5,13 @@ __author__ : renou
 #scrapy
 # http://scrapy-chs.readthedocs.io/zh_CN/0.24/
 
-# scrapy startproject XXX
-
 import  os
 
 current_dir=os.getcwd()
 
 
 ##cmd
-print "cd "
-print  os.getcwd()
+
+print  "cd ",os.getcwd()
+print "scrapy crawl XXX"
+

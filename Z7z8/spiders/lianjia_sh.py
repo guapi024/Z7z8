@@ -169,10 +169,3 @@ class lianjia_sh_Spider(scrapy.Spider):
 
 
 
-'''
-
-cd D:\pc\pc\note\Python\test\github\Z7z8
-D:
-scrapy crawl lianjia_sh
-
-'''
