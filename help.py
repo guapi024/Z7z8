@@ -14,3 +14,4 @@ current_dir=os.getcwd()
 
 ##cmd
 print "cd "
+print  os.getcwd()
