@@ -45,41 +45,62 @@ class Z7Z8Pipeline(object):
 #         return item
 #
 # # #保存到xlsx
+#
+# class save_txt(object):
+#     def __init__(self):
+#         pass
+#     def to_txt(self,data,filename):
+#         try:
+#             file = open(filename, 'ab')
+#             if len(data)==0:
+#                 pass
+#             else:
+#                 file.writelines(str(data)+ '\n')
+#         except Exception, e:
+#             print e
+#         finally:
+#             file.close()
+#     def process_item(self, item, spider):
+#         current_dir = os.getcwd()
+#         data_dir = current_dir + "\\" + "data"
+#         # print  data_dir
+#         if os.path.exists(data_dir):
+#             pass
+#         else:
+#             os.mkdir(data_dir)
+#         line = [item['tag1']]
+#         file_name=datetime.datetime.now().strftime( '%Y_%m_%d' )
+#         self.to_txt(line,data_dir+"\\"+file_name+".txt")
+#         return item
 
-class save_json(object):
-    def __init__(self):
-        pass
-    def to_txt(self,data,filename):
-        try:
-            file = open(filename, 'ab')
-            if len(data)==0:
+    class save_csv(object):
+        def __init__(self):
+            pass
+
+        def to_txt(self, data, filename):
+            try:
+                file = open(filename, 'ab')
+                if len(data) == 0:
+                    pass
+                else:
+                    file.writelines(str(data) + '\n')
+            except Exception, e:
+                print e
+            finally:
+                file.close()
+
+        def process_item(self, item, spider):
+            current_dir = os.getcwd()
+            data_dir = current_dir + "\\" + "data"
+            # print  data_dir
+            if os.path.exists(data_dir):
                 pass
             else:
-                # print data
-                file.writelines(str(data)+ '\n')
-                xx= data['tag1']
-                print xx,file.write(xx)
-        except Exception, e:
-            print e
-        finally:
-            file.close()
-
-
-    def process_item(self, item, spider):
-        current_dir = os.getcwd()
-        data_dir = current_dir + "\\" + "data"
-        # print  data_dir
-        if os.path.exists(data_dir):
-            pass
-        else:
-            os.mkdir(data_dir)
-        line = [item['uq_url']]
-        line=item
-        # print line,"url"
-        file_name=datetime.datetime.now().strftime( '%Y_%m_%d' )
-        self.to_txt(line,data_dir+"\\"+file_name+".txt")
-
-        return item
+                os.mkdir(data_dir)
+            line = str(item['tag1']).encode('utf-8')
+            file_name = datetime.datetime.now().strftime('%Y_%m_%d')
+            self.to_txt(line, data_dir + "\\" + file_name + ".csv")
+            return item
 
 ##test
 # test=save_json()
