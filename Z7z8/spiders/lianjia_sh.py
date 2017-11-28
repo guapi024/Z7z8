@@ -133,8 +133,11 @@ class lianjia_sh_Spider(scrapy.Spider):
             yield {
                 'uq_url': res.xpath('.//div[@class="info"]//a/@href').extract()[0].split(".")[-2].split("/")[-1],#'uq_url': u'sh4628068'
                 'tag':','.join(res.xpath('.//div[@class="info"]//span[@class="c-prop-tag2"]/text()').extract()),
-                'tag1': res.xpath('.//div[@class="info"]//span[@class="c-prop-tag2"]/text()').extract()[0].encode('utf-8'),
+                'tag1': res.xpath('.//div[@class="info"]//span[@class="c-prop-tag2"]/text()').extract()[0],
             }
+            # print  res.xpath('.//div[@class="info"]//span[@class="c-prop-tag2"]/text()').extract()[0]
+            # print  res.xpath('.//div[@class="info"]//span[@class="c-prop-tag2"]/text()').extract()[0].encode("gbk")
+            # print ','.join(res.xpath('.//div[@class="info"]//span[@class="c-prop-tag2"]/text()').extract())
             url_dir=r'D:\pc\pc\note\Python\test\scrapy\tutorial\tutorial\\'+str(int(res.xpath('//span[@class="current"]/text()').extract()[0]))+".txt"
 
             # self.into_file(url_dir,res.xpath('.//div[@class="info"]//a/@href').extract()[0].split(".")[-2].split("/")[-1])

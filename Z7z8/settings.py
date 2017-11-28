@@ -65,7 +65,7 @@ COOKIES_ENABLED = False
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   'Z7z8.pipelines.save_csv': 300,
+   'Z7z8.pipelines.save_file': 300,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
