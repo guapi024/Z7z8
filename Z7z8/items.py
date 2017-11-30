@@ -29,3 +29,4 @@ class lianjia_ershoufang(scrapy.Item):
     tag1=scrapy.Field()##满五
     tag2=scrapy.Field()##有钥匙
     tag3=scrapy.Field()##距离1号线共康路站316米
+    tag4=scrapy.Field()
