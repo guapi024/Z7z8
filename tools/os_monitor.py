@@ -155,135 +155,109 @@ def net():
     finally:
         return netinfo
 
+def mail(receivers,info,sub,filename,partname):
 
+    import smtplib, sys, os
+    from email.mime.text import MIMEText ##
+    from email.header import Header##
+    from email.mime.multipart import MIMEMultipart  ##发送附件
+    # from email.mime.image import MIMEImage  ##照片
+    mail_host = 'smtp.qq.com'
+    mail_user = '289010426@qq.com'
+    mail_pass = 'svmyfirdorgxbjfa'
+    sender = mail_user  # '289010426@qq.com'
+    receivers = receivers #['243362276@qq.com']
+    # receivers =  ['243362276@qq.com','hanchengliang@chinazyjr.com']
+    message = MIMEMultipart()
+    file_str = ''
+    with open(filename, 'rt') as ff:
+        for line in filter(None, ff):
+            # print '<p>',line,'</p>'
+            line = str('<p>' + line + '</p>')
+            file_str += ''.join(line)
 
+    mail_msg = """
+    <p>log info:</p>
+    <p>%s</p>
+    <p>file name:</p>%s
+    <p>file con start</p>
+    <p>%s</p>
+    <p>file con end</p>
+     <!--<p><a href="http://www.renouh.com">链接</a></p>-->
+    <p>ps:\n附件</p>
+    """ % (info,filename, file_str)
 
-
-msg='end '
-logging.info(msg)
-msg=''
-
-class write2json(multiprocessing.Process):
-    def __init__(self,filename,filedata):
-        multiprocessing.Process.__init__(self)
-        self.filename=filename
-        self.filedata=filedata
-    def run(self):
-        print datetime.datetime.now(), 'write2json start'
-        # with open(self.filename, 'ab') as obj:
-        #     json.dump(self.filedata, obj)
-        #     obj.write("\t\n")
-        # with open(self.filename, 'ab') as obj:
-        #     json.dump(self.filedata, obj)
-        #     obj.write("\t\n")
-        for i in range(1, 99, 2):
-            with open(self.filename, 'ab') as obj:
-                # print obj.write("write2json %d line\n" % i)
-                # print i
-                pass
-        print datetime.datetime.now(),'write2json ok'
-
-
-class printjson(multiprocessing.Process):
-    def __init__(self,filename,filedata):
-        multiprocessing.Process.__init__(self)
-        self.filename=filename
-        self.filedata=filedata
-    def run(self):
-        print datetime.datetime.now(), 'printjson start'
-        # with open(self.filename, 'ab') as obj:
-        #     json.dump(self.filedata, obj)
-        #     obj.write("\t\n")
-        # with open(self.filename, 'ab') as obj:
-        #     json.dump(self.filedata, obj)
-        #     obj.write("\t\n")
-        for i in range(0, 100, 2):
-            with open(self.filename, 'ab') as obj:
-                # print obj.write("printjson %d line\n" % i)
-                print i
-                # pass
-        print datetime.datetime.now(),'printjson ok'
-
-
-
-def runx(l,filename,data,seq):
-    l.acquire()
-    if seq % 10 == 0:
-        print  '**' * 20
-    sl=(100-seq)/50.00
-    print datetime.datetime.now(), 'printjson start runx %d' %seq
-    for i in range(0, 100, 2):
-        try:
-                with open(filename, 'ab') as obj:
-                    time.sleep(int(sl))
-                    obj.write("printjson %d line\n" % i)
-                    # print i
-        except BaseException, e:
-                print e
-    print datetime.datetime.now(), 'printjson ok runx %d %s' %(seq,sl)
-    l.release()
-def runy(l,filename,data,seq):
-    l.acquire()
-    if seq % 10 == 0:
-        print  '**' * 20
-    sl=(100-seq)/100.00
-    print datetime.datetime.now(), 'printjson start runx %d' %seq
-    for i in range(1, 100, 2):
-        try:
-                with open(filename, 'ab') as obj:
-                    time.sleep(int(sl))
-                    obj.write("printjson %d line\n" % i)
-                    # print i
-        except BaseException, e:
-                print e
-    print datetime.datetime.now(), 'printjson ok runx %d %s' %(seq,sl)
-    l.release()
-
-def run(filename,data,seq):
-    # print  seq
-
-    # l.acquire()
-    # print l.acquire(),seq
-    if seq % 10 == 0:
-        print  '**' * 20
-    sl=(100-seq)/100.00
-    print datetime.datetime.now(), 'printjson start runx %d' %seq
-    # for i in range(1, 100, 2):
+    message.attach(MIMEText(mail_msg, 'html', 'utf-8'))
+    # message.attach(MIMEText(mail_msg, 'plain', 'utf-8'))
+    att1 = MIMEText(open(filename, 'rb').read(), 'base64', 'utf-8')
+    att1["Content-Type"] = 'application/octet-stream'
+    att1["Content-Disposition"] = 'attachment; filename="%s"' % filename
+    message.attach(att1)
+    ##循环发送所有文件
+    # for root, dirs, files in os.walk(os.getcwd()):
+    #     # print files
+    #     for file in files:
+    #         # print file
+    #         if (file[-3:] == 'log' and file != partname):  ##and os.path.join(root,file)!=fileone): 绝对路径
+    #             # print file
+    #             att1 = MIMEText(open(file, 'rb').read(), 'base64', 'utf-8')
+    #             att1["Content-Type"] = 'application/octet-stream'
+    #             att1["Content-Disposition"] = 'attachment; filename="%s"' % file
+    #             message.attach(att1)
+    # message['From'] = mail_user  # Header("测试发件人", 'utf-8')
+    message['From'] = 'from '
+    message['To'] = 'to'
+    subject = "%s" % sub
+    message['Subject'] = sub
     try:
-                with open(filename, 'ab') as obj:
-                    time.sleep(int(sl))
-                    obj.write("printjson %d line\n" % seq)
-                    # print i
-    except BaseException, e:
-                print e
-    print datetime.datetime.now(), 'printjson ok runx %d %s' %(seq,sl)
-    # print l.release(),seq
+        smtpObj = smtplib.SMTP_SSL()
+        smtpObj.connect(mail_host, 465)  # 25 为SMTP 端口号
+        smtpObj.login(mail_user, mail_pass)
+        smtpObj.sendmail(sender, receivers, message.as_string())
+        print u"sen mail ok"
+    except smtplib.SMTPException, e:
+        print u"error send mail fail is %s" % e
 
-if __name__ == '__main__':
 
-    # filedata=disk()
-    start = time.time()
-    print 'start',datetime.datetime.now()
+receivers=['289010426@qq.com',]
+info='info'
+sub='mail title'.upper()
+filename='os_monitor20171205.log'
 
-    from multiprocessing import Process, Lock
-    lock = Lock()
-    # t = multiprocessing.Process(target=runx, args=(lock,datafile, '1',1,), ).start()
-    # t = multiprocessing.Process(target=runy, args=(lock,datafile, '1',1,), ).start()
+# print  mail(receivers,info,sub,filename,filename)
+dirname=r'D:\pc\pc\note\Python\github\Z7z8\tools'
+filetype='*log'
 
-    # from multiprocessing import Process, Lock
-    # lock = Lock()
-    # for i in range(1,100,2):
-    #     multiprocessing.Process(target=run, args=(lock,datafile, '1',i,), ).start()
-    #     multiprocessing.Process(target=run, args=(lock, datafile, '1', i+1,), ).start()
-    pool = multiprocessing.Pool(processes = 30)
-    for i in range(2,100,2):
-        msg = "hello %d" %(i)
-        res=pool.apply_async(run, args=(datafile, '1',i,),)   #维持执行的进程总数为processes，当一个进程执行完毕后会添加新的进程进去
-        print  res,i
-    print "Mark~ Mark~ Mark~~~~~~~~~~~~~~~~~~~~~~"
-    pool.close()
-    pool.join()   #调用join之前，先调用close函数，否则会出错。执行完close后不会有新的进程加入到pool,join函数等待所有子进程结束
-    print "Sub-process(es) done."
-    end = time.time()
-    print 'end',datetime.datetime.now()
-    print str(round(end - start, 3)) + 's'
+path=dirname+os.sep
+for filename in os.listdir(path):
+    if  os.path.isfile(path+filename):
+            # print path+filename,filename
+            print  filename
+
+# for root, dirs, files in os.walk(path):
+#     print files
+    # # print files
+    # for file in files:
+    #     # print file
+    #     if (file[-3:] == 'log' and file != partname):  ##and os.path.join(root,file)!=fileone): 绝对路径
+    #         # print file
+    #         att1 = MIMEText(open(file, 'rb').read(), 'base64', 'utf-8')
+    #         att1["Content-Type"] = 'application/octet-stream'
+    #         att1["Content-Disposition"] = 'attachment; filename="%s"' % file
+    #         message.attach(att1)
+
+
+
+# if __name__ == '__main__':
+#
+#     # filedata=disk()
+#     start = time.time()
+#     print 'start',datetime.datetime.now()
+#
+#     from multiprocessing import Process, Lock
+#     lock = Lock()
+#     # t = multiprocessing.Process(target=runx, args=(lock,datafile, '1',1,), ).start()
+#     # t = multiprocessing.Process(target=runy, args=(lock,datafile, '1',1,), ).start()
+#     end = time.time()
+#     print 'end',datetime.datetime.now()
+#     print str(round(end - start, 3)) + 's'
