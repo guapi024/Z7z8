@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 '''
 __author__ : renou
-__file_name__ : os_monitor.py
+__file_name__ : monitor.py
 '''
 import  os,sys,datetime,time,json,logging,platform,commands,multiprocessing
 
@@ -155,96 +155,6 @@ def net():
     finally:
         return netinfo
 
-def mail(receivers,info,sub,filename,partname):
-
-    import smtplib, sys, os
-    from email.mime.text import MIMEText ##
-    from email.header import Header##
-    from email.mime.multipart import MIMEMultipart  ##发送附件
-    # from email.mime.image import MIMEImage  ##照片
-    mail_host = 'smtp.qq.com'
-    mail_user = '289010426@qq.com'
-    mail_pass = 'svmyfirdorgxbjfa'
-    sender = mail_user  # '289010426@qq.com'
-    receivers = receivers #['243362276@qq.com']
-    # receivers =  ['243362276@qq.com','hanchengliang@chinazyjr.com']
-    message = MIMEMultipart()
-    file_str = ''
-    with open(filename, 'rt') as ff:
-        for line in filter(None, ff):
-            # print '<p>',line,'</p>'
-            line = str('<p>' + line + '</p>')
-            file_str += ''.join(line)
-
-    mail_msg = """
-    <p>log info:</p>
-    <p>%s</p>
-    <p>file name:</p>%s
-    <p>file con start</p>
-    <p>%s</p>
-    <p>file con end</p>
-     <!--<p><a href="http://www.renouh.com">链接</a></p>-->
-    <p>ps:\n附件</p>
-    """ % (info,filename, file_str)
-
-    message.attach(MIMEText(mail_msg, 'html', 'utf-8'))
-    # message.attach(MIMEText(mail_msg, 'plain', 'utf-8'))
-    att1 = MIMEText(open(filename, 'rb').read(), 'base64', 'utf-8')
-    att1["Content-Type"] = 'application/octet-stream'
-    att1["Content-Disposition"] = 'attachment; filename="%s"' % filename
-    message.attach(att1)
-    ##循环发送所有文件
-    # for root, dirs, files in os.walk(os.getcwd()):
-    #     # print files
-    #     for file in files:
-    #         # print file
-    #         if (file[-3:] == 'log' and file != partname):  ##and os.path.join(root,file)!=fileone): 绝对路径
-    #             # print file
-    #             att1 = MIMEText(open(file, 'rb').read(), 'base64', 'utf-8')
-    #             att1["Content-Type"] = 'application/octet-stream'
-    #             att1["Content-Disposition"] = 'attachment; filename="%s"' % file
-    #             message.attach(att1)
-    # message['From'] = mail_user  # Header("测试发件人", 'utf-8')
-    message['From'] = 'from '
-    message['To'] = 'to'
-    subject = "%s" % sub
-    message['Subject'] = sub
-    try:
-        smtpObj = smtplib.SMTP_SSL()
-        smtpObj.connect(mail_host, 465)  # 25 为SMTP 端口号
-        smtpObj.login(mail_user, mail_pass)
-        smtpObj.sendmail(sender, receivers, message.as_string())
-        print u"sen mail ok"
-    except smtplib.SMTPException, e:
-        print u"error send mail fail is %s" % e
-
-
-receivers=['289010426@qq.com',]
-info='info'
-sub='mail title'.upper()
-filename='os_monitor20171205.log'
-
-# print  mail(receivers,info,sub,filename,filename)
-dirname=r'D:\pc\pc\note\Python\github\Z7z8\tools'
-filetype='*log'
-
-path=dirname+os.sep
-for filename in os.listdir(path):
-    if  os.path.isfile(path+filename):
-            # print path+filename,filename
-            print  filename
-
-# for root, dirs, files in os.walk(path):
-#     print files
-    # # print files
-    # for file in files:
-    #     # print file
-    #     if (file[-3:] == 'log' and file != partname):  ##and os.path.join(root,file)!=fileone): 绝对路径
-    #         # print file
-    #         att1 = MIMEText(open(file, 'rb').read(), 'base64', 'utf-8')
-    #         att1["Content-Type"] = 'application/octet-stream'
-    #         att1["Content-Disposition"] = 'attachment; filename="%s"' % file
-    #         message.attach(att1)
 
 
 
