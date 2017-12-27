@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 '''
 __author__ : renou
-__file_name__ : other.py 
-__time__ : 2017-11-28 
+__file_name__ : other.py
 '''
 import  platform
 print platform.architecture()
