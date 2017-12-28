@@ -9,19 +9,11 @@ import  os,sys,datetime,time,json,logging,platform,commands,multiprocessing
 ##dict
 osinfo={}
 cpu_count=multiprocessing.cpu_count()
-
-
 ##create log dt/dir/name
 logdt=datetime.datetime.now().strftime('%Y%m%d')
-if platform.system()=="Windows":
-    logdir=os.getcwd()+"\\log"+"\\"
-else:
-    logdir = os.getcwd() + "/log" + "/"
-if platform.system()=="Windows":
-    datadir=os.getcwd()+"\\data"+"\\"
-else:
-    datadir = os.getcwd() + "/data" + "/"
-
+sep=os.sep
+logdir=os.getcwd()+"%slog%s"  %(sep,sep)
+datadir=os.getcwd()+"%sdata%s"  %(sep,sep)
 # print logdir
 if os.path.exists(logdir)==False:
     os.mkdir(logdir)
@@ -37,15 +29,9 @@ datafile=datadir+os.path.split(os.path.realpath( sys.argv[0]))[-1].split('.')[0]
 # print logfile
 logging.basicConfig(level=logging.DEBUG,
                     format='"%(asctime)s","%(filename)s","%(module)s","%(funcName)s","%(lineno)d","%(thread)d","%(threadName)s","%(process)d","%(levelno)s","%(levelname)s","%(relativeCreated)d","%(name)s","%(message)s"',
-                    datefmt='%Y%m%d%H%M%S',
+                    datefmt='%Y-%m-%d %H:%M:%S',
                     filename=logfile,
                     filemode='a')
-# logging.debug('This is debug message')
-msg='start '
-logging.info(msg)
-msg=''
-# logging.warning('This is warning message')
-
 def disk():
     try:
         if os.name == "nt":
@@ -154,20 +140,43 @@ def net():
         logging.info(msg)
     finally:
         return netinfo
+def save2json(dt,lock,type):
+    data={}
+    lock.acquire()
+    data['data'] = dt
+    data['time']=str(datetime.datetime.now())
+    data['type'] = type
+    with open(datafile, 'ab') as file:
+        json.dump(data, file)
+        file.write('\n')
+    lock.release()
+def warining():
+    pass
 
+def cmd_type():
+    monitor_type = {}
+    monitor_type['disk'] = disk()
+    monitor_type['net'] = net()
+    monitor_type['cpu'] = cpu()
+    return  monitor_type
+if __name__ == '__main__':
+    start_dt=datetime.datetime.now()
+    msg = 'start:'+str(start_dt)
+    logging.info(msg)
+    from multiprocessing import Process, Lock
+    lock = Lock()
+    # for i in cmd_type():
+    #     data=cmd_type()[i]
+    #     t = multiprocessing.Process(target=save2json, args=(data, lock,i), ).start()
+    pool = multiprocessing.Pool(processes=10)
+    for i in range(0, 100):
+        msg = "hello %d" % (i)
+        res = pool.apply_async(save2json, args=(disk(),lock, 'disk',), )
+        print  'start',res, i
+    pool.close()
+    pool.join()
+    print "all done."
+    end_dt=datetime.datetime.now()
+    msg = 'end:'+str(end_dt)+',execute:'+str(end_dt - start_dt)
+    logging.info(msg)
 
-
-
-# if __name__ == '__main__':
-#
-#     # filedata=disk()
-#     start = time.time()
-#     print 'start',datetime.datetime.now()
-#
-#     from multiprocessing import Process, Lock
-#     lock = Lock()
-#     # t = multiprocessing.Process(target=runx, args=(lock,datafile, '1',1,), ).start()
-#     # t = multiprocessing.Process(target=runy, args=(lock,datafile, '1',1,), ).start()
-#     end = time.time()
-#     print 'end',datetime.datetime.now()
-#     print str(round(end - start, 3)) + 's'
