@@ -22,11 +22,6 @@ def cnf(path):
     finally:
         return ini_dict
 
-
-
-
-
-
 def conn(data,sql):
     resdata=()
     rowcount=()
