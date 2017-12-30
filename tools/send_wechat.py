@@ -13,6 +13,7 @@ class main(object):
     def __init__(self):
         pass
 
+
     def load_conf(self,data):
         ini_dict = {}
         try:
@@ -50,3 +51,5 @@ class main(object):
 ss=main()
 confpath='conf.ini'
 print ss.load_conf(confpath)
+
+# if __name__ == '__main__':
