@@ -47,6 +47,8 @@ class main(object):
             return wx_post.text
         except Exception, e:
             print  'error is ', e, token
+    def other(self):
+        pass
 
 ss=main()
 confpath='conf.ini'
