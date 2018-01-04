@@ -140,16 +140,21 @@ def net():
         logging.info(msg)
     finally:
         return netinfo
-def save2json(dt,lock,type):
+def save2json(dt,type,seq):
+    print   type,seq,datetime.datetime.now(),'start'
+    time.sleep(int((100 - seq) / 50.00))
     data={}
-    lock.acquire()
+    # lock.acquire()
     data['data'] = dt
     data['time']=str(datetime.datetime.now())
     data['type'] = type
+    data['seq']=seq
+
     with open(datafile, 'ab') as file:
         json.dump(data, file)
         file.write('\n')
-    lock.release()
+    # lock.release()
+    print   type, seq, datetime.datetime.now(),'end'
 def warining():
     pass
 
@@ -165,14 +170,11 @@ if __name__ == '__main__':
     logging.info(msg)
     from multiprocessing import Process, Lock
     lock = Lock()
-    # for i in cmd_type():
-    #     data=cmd_type()[i]
-    #     t = multiprocessing.Process(target=save2json, args=(data, lock,i), ).start()
     pool = multiprocessing.Pool(processes=10)
     for i in range(0, 100):
         msg = "hello %d" % (i)
-        res = pool.apply_async(save2json, args=(disk(),lock, 'disk',), )
-        print  'start',res, i
+        # for x in cmd_type():
+        res = pool.apply_async(save2json, args=(i,i,i,), )
     pool.close()
     pool.join()
     print "all done."
