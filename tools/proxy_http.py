@@ -73,34 +73,34 @@ random_choice_ips=[]
 # ip_dict['random_choice_url_one']=random_choice_url_one
 
 random_choice_user_agents =tools_dict.random_choice_user_agents
-testurl="http://www.ip181.com/"
+# testurl="http://www.ip181.com/"
 # testurl="https://www.baidu.com/s?ie=utf8&oe=utf8&wd=ip&tn=94749616_hao_pg&ch=3"
 testurl='http://www.whatismyip.com.tw/'
-# testurl="http://ip.chinaz.com/getip.aspx"
+testurl="http://ip.chinaz.com/getip.aspx"
 # testurl="http://www.renouh.com"
-random_choice_ips=["110.73.3.198:8123",
-"24.113.137.207:53281","182.253.83.58:65205","173.249.15.109:3128","200.85.120.218:8080","172.93.111.106:1080","43.239.75.242:8080",
-"104.243.47.152:1080","182.253.176.170:3128","213.160.167.31:80","24.113.137.207:53281"
-]
-# random_choice_ips=["39.134.93.13:8080",]
-# for i in    random_choice_ips:
-#     # print i
-#     try:
-#         ip=i
-#         # print 'proxy:',ip
-#         proxy = {'http': ip}
-#         headers = {'User-Agent': random.choice(random_choice_user_agents)}
-#         # response = requests.get(testurl, headers =headers , proxies = proxy,)
-#         response = requests.get(testurl, headers=headers)
-#         # response.encoding = 'gbk'
-#         response.encoding = 'utf-8'
-#         # print response.status_code,response.text
-#         # local_ip = re.findall(r'\d+\.\d+.\d+.\d+', response.text, re.S)
-#         # print local_ip
-#         # print 'ok',local_ip,ip
-#         print response.text
-#     except Exception,e:
-#         print 'fail',i,e
+# random_choice_ips=["110.73.3.198:8123",
+# "24.113.137.207:53281","182.253.83.58:65205","173.249.15.109:3128","200.85.120.218:8080","172.93.111.106:1080","43.239.75.242:8080",
+# "104.243.47.152:1080","182.253.176.170:3128","213.160.167.31:80","24.113.137.207:53281"
+# ]
+random_choice_ips=["110.136.233.160:80",]
+for i in    random_choice_ips:
+    # print i
+    try:
+        ip=i
+        # print 'proxy:',ip
+        proxy = {'http': ip}
+        headers = {'User-Agent': random.choice(random_choice_user_agents)}
+        # response = requests.get(testurl, headers =headers , proxies = proxy,)
+        response = requests.get(testurl, headers=headers)
+        # response.encoding = 'gbk'
+        response.encoding = 'utf-8'
+        # print response.status_code,response.text
+        local_ip = re.findall(r'\d+\.\d+.\d+.\d+', response.text, re.S)
+        # print local_ip
+        print 'ok',local_ip
+        print response.text
+    except Exception,e:
+        print 'fail',i,e
 # import time
 # for i in    random_choice_ips:
 #     try:
