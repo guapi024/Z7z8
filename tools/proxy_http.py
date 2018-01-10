@@ -101,22 +101,3 @@ for i in    random_choice_ips:
         print response.text
     except Exception,e:
         print 'fail',i,e
-# import time
-# for i in    random_choice_ips:
-#     try:
-#         s = requests.session()
-#         api_url="http://www.xicidaili.com/nn"
-#         # api_url="http://www.renouh.com"
-#         proxy = {'http': i}
-#         headers = {'User-Agent': random.choice(random_choice_user_agents)}
-#         time.sleep(1)
-#         response=requests.get(api_url, headers =headers ,timeout = 6)
-#         print   response.status_code,'end'
-#         s.keep_alive = False
-#         # print response.status_code,'status_code'
-#         # print   proxy, headers, 'end'
-#     except Exception,e:
-#         print 'error',e
-#
-# print time
-
