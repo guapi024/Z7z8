@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 '''
 __author__ : renou
-__file_name__ : db_monitor.py
+__file_name__ : db_healthcheck.py
 '''
-
 import MySQLdb
 import ConfigParser
 
@@ -18,7 +17,6 @@ def cnf(path):
             ini_dict[i]=dict(ci)
     except ConfigParser.ParsingError,e:
         print u"error is %s" %e
-
     finally:
         return ini_dict
 
@@ -32,7 +30,7 @@ def conn(data,sql):
     user=data['user']
     pwd=data['pwd']
     db=data['db']
-    conn = MySQLdb.connect(host=ip, port=port, user=user, passwd=pwd,db=db,connect_timeout=10)
+    conn = MySQLdb.connect(host=ip, port=port, user=user, passwd=pwd,db=db,connect_timeout=3)
     try:
         cur = conn.cursor()
         cur.execute(sql)
@@ -50,45 +48,56 @@ def conn(data,sql):
             # print name, 'close conn'
         return  resdata,rowcount,description
 def live_check(data):
-    try:
-        for i in (data):
+    live_ok=0
+    live_fail=0
+    tt=0
+    for i in (data):
+        try:
             # print i,ini_dict[i]
             sql='select 1'
             res,rc,desc=conn(data[i],sql)
             if int(res[0][0]) ==1:
-                print data[i]['ip'],'is','ok'
-    except Exception,e:
-        print data[i]['ip'],'is',e
-    finally:
-        print 'end'
+                print data[i]['name'], data[i]['ip'], data[i]['port'],'is ok'
+                live_ok += 1
+        except Exception,e:
+            live_fail+=1
+            print data[i]['name'], data[i]['ip'], data[i]['port'], 'is error %s' %e
+        # print data[i]['name'], data[i]['ip'], data[i]['port'],'is',e
+        finally:
+            tt+=1
+    print 'live check total is %s,ok is %s,fail is %s' % (tt, live_ok, live_fail)
 def slave_check(data):
-    try:
-        for i in (data):
+    live_ok=0
+    live_fail=0
+    tt=0
+    for i in (data):
+        try:
             # print i,ini_dict[i]
             sql='show slave status'
             res,rc,desc=conn(data[i],sql)
-
             if rc==0:
-                print data[i]['ip'], 'is master'
-                print 'pass'
-
+                # print data[i]['ip'],data[i]['port'], 'is master'
+                # print 'pass'
                 sql='show processlist'
+                live_ok += 1
             else:
-                print data[i]['ip'], 'is slave'
+                # print data[i]['ip'],data[i]['port'], 'is slave'
                 desc=map(lambda x: x[0],desc)
                 res=list(res[0])
                 dict_res=dict(zip(desc,res))
-                print dict_res['Last_IO_Errno']
-                print dict_res['Last_SQL_Errno']
-                print dict_res['Last_Error']
-                print dict_res['Last_SQL_Error']
-    except Exception,e:
-        print data[i]['ip'],'is',e
-    finally:
-        print 'end'
+                print data[i]['name'],data[i]['ip'],data[i]['port'],'behind',dict_res['Seconds_Behind_Master'],',',dict_res['Last_IO_Errno'],dict_res['Last_SQL_Errno'],dict_res['Last_Error'],dict_res['Last_SQL_Error']
+
+        except Exception,e:
+            live_fail += 1
+            print data[i]['name'],data[i]['ip'],data[i]['port'],'is',e
+        finally:
+            tt += 1
+    print 'slave check total is %s,ok is %s,fail is %s' % (tt, live_ok, live_fail)
 
 path='test_db.ini'
+# path='db.ini'
 ini_dict=cnf(path)
-# live_check(ini_dict)
-slave_check(ini_dict)
 
+
+live_check(ini_dict)
+slave_check(ini_dict)
