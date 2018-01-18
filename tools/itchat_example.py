@@ -30,7 +30,6 @@ def save_data(filename):
     friends = itchat.get_friends(update=True)[0:]
     save2json(filename,friends)
 
-filename=r"D:\pc\pc\note\Python\github\Z7z8\tools\itchat_example.json"
 filename = 'itchat_example.json'
 
 ##第一次运行保存数据，以后只需要读取本地文件简化相应操作
