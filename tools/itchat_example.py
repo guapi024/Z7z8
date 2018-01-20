@@ -46,6 +46,7 @@ df = pd.DataFrame(data)
 # df.info()
 
 
+
 ##性别
 df_p=df["Sex"]
 df_p=df_p.replace(1,u"男")
