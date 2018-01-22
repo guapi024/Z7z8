@@ -71,50 +71,43 @@ class save_file(object):
         import sys
         reload(sys)
         sys.setdefaultencoding('utf-8')
-        # data = {'tag': u'\u6ee1\u4e94,\u6709\u94a5\u5319', 'tag1': u'\u6ee1\u4e94', 'uq_url': u'sh4617612'}
         lst = data
-        print lst
+        # lst=','.join(data.values())
         fp = open(filename, "ab")
         fp.write(json.dumps(lst, ensure_ascii=False))
         fp.write('\n')
         fp.close()
     def to_csv(self,data,filename):
-        try:
-            file = open(filename, 'ab')
-            if len(data)==0:
-                pass
-            else:
-                file.writelines(str(data)+ '\n')
-        except Exception, e:
-            print e
-        finally:
-            file.close()
-
+        import sys
+        reload(sys)
+        sys.setdefaultencoding('utf-8')
+        lst = '"' + '","'.join(data.values()) + '"'
+        key_name=','.join(data.keys())
+        if os.path.exists(filename):
+            pass
+        else:
+            fp = open(filename, "ab")
+            fp.write(key_name)
+            fp.write('\n')
+            fp.close()
+        # lst=','.join(data.values())
+        fp = open(filename, "ab")
+        fp.write(lst)
+        fp.write('\n')
+        fp.close()
     def process_item(self, item, spider):
         current_dir = os.getcwd()
         data_dir = current_dir + "\\" + "data"
-        # print  data_dir
         if os.path.exists(data_dir):
             pass
         else:
             os.mkdir(data_dir)
-        # line = [item['tag1']]
         line=item
-        # print  line
         file_name=datetime.datetime.now().strftime( '%Y_%m_%d' )
-        self.to_txt(line,data_dir+"\\"+file_name+".txt")
-        # self.to_csv(line, data_dir + "\\" + file_name + ".csv")
+        # file_name=datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S_%f_%p')
+        # self.to_txt(line,data_dir+"\\"+file_name+".csv")
+        self.to_csv(line, data_dir + "\\" + file_name + ".csv")
         return item
 
-
-##test
-# test=save_json()
-# item={'uq_url':u'sh4637210'}
-# test.process_item(item,'')
-
-#
-# file_name=datetime.datetime.now().strftime( '%Y_%m_%d_%H_%M_%S_%f' )
-# file_name=datetime.datetime.now().strftime( '%Y_%m_%d' )
-# print   file_name
 
 
