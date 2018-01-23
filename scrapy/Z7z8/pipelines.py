@@ -78,6 +78,11 @@ class save_file(object):
         fp.write('\n')
         fp.close()
     def to_csv(self,data,filename):
+
+        area_link=str(data['area_link']).split("/")[-2]
+        area_town_link=str(data['area_town_link']).split("/")[-2]
+        # search_result_sum=str(data['search_result_sum'])
+        filename=filename+"_"+area_link+"_"+area_town_link+".csv"
         import sys
         reload(sys)
         sys.setdefaultencoding('utf-8')
@@ -106,7 +111,7 @@ class save_file(object):
         file_name=datetime.datetime.now().strftime( '%Y_%m_%d' )
         # file_name=datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S_%f_%p')
         # self.to_txt(line,data_dir+"\\"+file_name+".csv")
-        self.to_csv(line, data_dir + "\\" + file_name + ".csv")
+        self.to_csv(line, data_dir + "\\" + file_name)
         return item
 
 

@@ -10,12 +10,52 @@ import scrapy
 
 
 class lianjia_sh_Spider(scrapy.Spider):
+    import re
+    def res_data(url):
+        import urllib2
+        res = urllib2.urlopen(url)
+        data = res.read()
+        return data
+    urls = []
+    base_url = "http://sh.lianjia.com"
+    es_url = "http://sh.lianjia.com/ershoufang/"
+    import urllib2, re
+    from lxml import etree
+    data = res_data(es_url)
+    tree = etree.HTML(data)
+    for area in tree.xpath('//div[@class="level1"]/a'):
+        area = area.xpath('./@href')
+        if area != ['/ershoufang/'] and area != ['/ershoufang/shanghaizhoubian']:
+            area_url = str(base_url + area[0])
+            # print area_url
+            # area_url = "http://sh.lianjia.com/ershoufang/chongming"
+            data = res_data(area_url)
+            tree = etree.HTML(data)
+            for town in tree.xpath('//div[@class="level2-item"]/a'):
+                town = town.xpath('./@href')
+                if town != area:
+                    town_url = str(base_url + town[0])
+                    # print town_url
+                    urls.append(town_url)
+    urls = list(set(urls))
     name = "lianjia_sh"
     allowed_domains = ["sh.lianjia.com"]
-    start_urls = ["http://sh.lianjia.com/ershoufang/d01g100","http://sh.lianjia.com/ershoufang/gumei/g100"]
+    start_urls = ["http://sh.lianjia.com/ershoufang/chongming/"]
+    start_urls=urls
+    import os
+    current_dir = os.getcwd()
+    data_dir = current_dir + os.sep+ "data"
+    urls_name=data_dir+os.sep+"url.list"
+    fp = open(urls_name, "ab")
+    for url_list in urls:
+        fp.write(url_list)
+        fp.write('\n')
+    fp.close()
     def parse(self, response):
         filename = response.url.split("/")[-2]
         ss=1
+        search_result = response.xpath('//div[@class="search-result"]//span')
+        search_result_sum = search_result.xpath('./text()').extract()[0]
         for res in response.xpath('//ul[@class="js_fang_list"]//li'):
             ss += 1
             url= res.xpath('.//div[@class="info"]//a/@href').extract()[0]  ##url link /ershoufang/sh4702459.html
@@ -45,14 +85,16 @@ class lianjia_sh_Spider(scrapy.Spider):
             # # price_minor = scrapy.Field()  ##单价31280元/平
             price_minor= res.xpath('.//div[@class="info"]//span[@class="info-col price-item minor"]/text()').extract()[0].replace("\t", "").replace("\n", "")
             # # tag1 = scrapy.Field()  ##满五
-            tag1= res.xpath('.//div[@class="info"]//span[@class="c-prop-tag2"]/text()').extract()[0]
+            # tag1= res.xpath('.//div[@class="info"]//span[@class="c-prop-tag2"]/text()').extract()[0]
             # # tag2 = scrapy.Field()  ##有钥匙
-            tag2= res.xpath('.//div[@class="info"]//span[@class="c-prop-tag2"]/text()').extract()[1]
+            # tag2= res.xpath('.//div[@class="info"]//span[@class="c-prop-tag2"]/text()').extract()[1]
             # # tag3 = scrapy.Field()  ##距离1号线共康路站316米
             tag= ','.join(res.xpath('.//div[@class="info"]//span[@class="c-prop-tag2"]/text()').extract())
             # print res.xpath('.//div[@class="info"]//div[@class="info-col price-item main"]/span/text()').extract()
             ##title
             # print  res.xpath('.//div[@class="info"]//span[@class="c-prop-tag2"]/text()').extract()[0]
+
+
             import datetime
             yield {
                 'load_time':str(datetime.datetime.now()),
@@ -70,14 +112,19 @@ class lianjia_sh_Spider(scrapy.Spider):
                 'area_town_link':area_town_link,# = scrapy.Field()  ##/ershoufang/sijing/
                 'create_time':create_time,# = scrapy.Field()  ##|2012年建
                 'price_minor':price_minor,#= scrapy.Field()  ##单价31280元/平
-                'text1':text.split("|")[0],
-                'text2':text.split("|")[1],
-                'text3':text.split("|")[-2],
-                'text4':text.split("|")[-1],
+                # 'text1':text.split("|")[0],
+                # 'text2':text.split("|")[1],
+                # 'text3':text.split("|")[-2],
+                # 'text4':text.split("|")[-1],
+                'search_result_sum':search_result_sum,
 
             }
             url_dir=r'D:\pc\pc\note\Python\test\scrapy\tutorial\tutorial\\'+str(int(res.xpath('//span[@class="current"]/text()').extract()[0]))+".txt"
-        end_page= res.xpath('//div[@class="c-pagination"]/a/text()').extract()[-1]##下一页
+        try:
+            end_page= res.xpath('//div[@class="c-pagination"]/a/text()').extract()[-1]##下一页
+        except Exception,e:
+            # print e
+            end_page=u'error'
         start_page='http://sh.lianjia.com'
 
         if end_page==u'下一页'or end_page==u'\u4e0b\u4e00\u9875':
@@ -89,13 +136,17 @@ class lianjia_sh_Spider(scrapy.Spider):
             print u'下一页',str(start_page)+str(res.xpath('//div[@class="c-pagination"]/a/@href').extract()[-1])
             next_page=response.urljoin(str(start_page)+str(res.xpath('//div[@class="c-pagination"]/a/@href').extract()[-1]))
             print u'随机等待'
-            sleep_time=random.randint(1, 1)
-            for sleep_time_i in range(1,sleep_time):
-                # print u'随机等待'
-                print sleep_time-sleep_time_i
-                time.sleep(1)
-            print u'0',sleep_time
-            # yield scrapy.Request(next_page,callback=self.parse)
+
+            # sleep_time=random.random()
+            # time.sleep(sleep_time)
+            # print u'随机等待',sleep_time
+            # sleep_time=random.randint(1, 1)
+            # for sleep_time_i in range(1,sleep_time):
+            #     # print u'随机等待'
+            #     print sleep_time-sleep_time_i
+            #     time.sleep(1)
+            # print u'0',sleep_time
+            yield scrapy.Request(next_page,callback=self.parse)
         else:
             print u'最后一页'
 
