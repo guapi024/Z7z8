@@ -38,25 +38,32 @@ class lianjia_sh_Spider(scrapy.Spider):
     #                 # print town_url
     #                 urls.append(town_url)
     # urls = list(set(urls))
+    # import os
+    # current_dir = os.getcwd()
+    # data_dir = current_dir + os.sep + "data"
+    # urls_name = data_dir + os.sep + "url.list"
+    # if os.path.exists(urls_name):
+    #     pass
+    # else:
+    #     fp = open(urls_name, "ab")
+    #     for url_list in urls:
+    #         fp.write(url_list)
+    #         fp.write('\n')
+    #     fp.close()
     name = "lianjia_sh"
     allowed_domains = ["sh.lianjia.com"]
-    start_urls = ["http://sh.lianjia.com/ershoufang/chongming/"]
+    start_urls = ["http://sh.lianjia.com/ershoufang/baozhen/"]
     # start_urls=urls
-    urls=start_urls
-    import os
-    current_dir = os.getcwd()
-    data_dir = current_dir + os.sep+ "data"
-    urls_name=data_dir+os.sep+"url.list"
-    fp = open(urls_name, "ab")
-    for url_list in urls:
-        fp.write(url_list)
-        fp.write('\n')
-    fp.close()
+
     def parse(self, response):
         filename = response.url.split("/")[-2]
         ss=1
         search_result = response.xpath('//div[@class="search-result"]//span')
         search_result_sum = search_result.xpath('./text()').extract()[0]
+        search_area_xp=response.xpath('//div[@class="location-child"]//div')
+        search_area=search_area_xp.xpath('//div[@class="level1-item on"]//a').extract()
+        search_town=""
+        print   'xxxxx',search_area_xp
         for res in response.xpath('//ul[@class="js_fang_list"]//li'):
             ss += 1
             url= res.xpath('.//div[@class="info"]//a/@href').extract()[0]  ##url link /ershoufang/sh4702459.html
@@ -117,7 +124,6 @@ class lianjia_sh_Spider(scrapy.Spider):
                 'text2':text_dict["text2"],#4室2厅 | 148.49平| 低区/20层| 朝南
                 'text3':text_dict["text3"],#4室2厅 | 148.49平| 低区/20层| 朝南
                 'search_result_sum':search_result_sum,
-
             }
             url_dir=r'D:\pc\pc\note\Python\test\scrapy\tutorial\tutorial\\'+str(int(res.xpath('//span[@class="current"]/text()').extract()[0]))+".txt"
         try:
