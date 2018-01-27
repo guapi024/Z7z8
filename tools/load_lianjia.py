@@ -5,7 +5,7 @@ __file_name__ : get_urls.py
 '''
 import urllib2,re,os,datetime,json,time
 from lxml import etree
-# global exec_dict
+
 exec_dict={}
 def res_data(url):
     res = urllib2.urlopen(url)
