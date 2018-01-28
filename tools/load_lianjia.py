@@ -162,6 +162,8 @@ def get_data(url,url_name,sum):
 
 
 
+
+
 def config(url):
     es_url_type = es_url.split("/")[-2]
     current_dir = os.getcwd()
