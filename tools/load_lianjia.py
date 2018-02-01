@@ -315,9 +315,9 @@ if __name__ == '__main__':
     start_dt = datetime.datetime.now()
     print   "start_dt:",start_dt
     try:
-        es_url = "http://bj.lianjia.com/ershoufang/"
-        # es_url  =   "http://su.lianjia.com/ditiefang/"
-        # es_url = "http://sh.lianjia.com/ershoufang/"
+        # es_url = "http://bj.lianjia.com/ershoufang/"
+        es_url  =   "http://su.lianjia.com/ditiefang/"
+        es_url = "http://su.lianjia.com/ershoufang/"
         file_dt = '_'.join(es_url.split("/")[2:4]).replace(".lianjia.com", "") + "_" + str(datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S_%f_%p'))
         urls=config(es_url)
         if urls.has_key("create_dt"):
