@@ -89,37 +89,50 @@ def res_data(url):
     # finally:
     #     return data
 def get_urls(es_url):
-    urls = {}
-    es_rep = es_url.split("/")[-2]
-    base_url = es_url.replace("/" + es_rep + "/", "")
-    es_url_type = es_url.split("/")[-2]
+    g_urls= {"create_dt":str(datetime.datetime.now()),}
+    g_pro_name=es_url.split("/")[2].split(".")[0]
+    g_pro_type = es_url.split("/")[-2]
+    g_base_url = es_url.replace("/" + g_pro_type + "/", "")
     data = res_data(es_url)
     tree = etree.HTML(data)
-    for area in tree.xpath('//div[@class="level1"]/a'):
+    if  g_pro_name in ['bj']:
+        area_list=tree.xpath('//div[@class="sub_nav section_sub_nav"]/a')
+    elif    g_pro_name in ['sh','su']:
+        xpath_reg_area='//div[@data-role="%s"]/div/a'%g_pro_type
+        area_list=tree.xpath(xpath_reg_area)
+    for area in area_list:
         area_sum = {}
-        area_name=area.xpath('./text()')[0]
-        area = area.xpath('./@href')
-        if area[0] != "/"+es_url_type+"/" and area != ['/ershoufang/shanghaizhoubian'] and es_url_type in area[0] :
-            area_url = str(base_url + area[0])
-            data = res_data(area_url)
-            tree = etree.HTML(data)
-            search_result = tree.xpath('//div[@class="search-result"]//span/text()')
+        area_name = area.xpath('./text()')[0]
+        area = area.xpath('./@href')[0]
+        if g_pro_type in  area:
+            if area in ['https://lf.lianjia.com/ershoufang/yanjiao/','https://lf.lianjia.com/ershoufang/xianghe/']:
+                area_url=area
+            else:
+                area_url = str(g_base_url + area)
+            area_data = res_data(area_url)
+            area_tree = etree.HTML(area_data)
+            search_result = area_tree.xpath('//div[@class="resultDes clear"]//span/text()')[0]
+            if g_pro_name in ['bj']:
+                town_list=area_tree.xpath('//div[@class="sub_sub_nav section_sub_sub_nav"]/a')
+            elif    g_pro_name in ['sh','su']:
+                xpath_reg_town = '//div[@data-role="%s"]/div' % g_pro_type
+                town_list = area_tree.xpath(xpath_reg_town)[1].xpath('./a')
+            if area in ['https://lf.lianjia.com/ershoufang/yanjiao/', 'https://lf.lianjia.com/ershoufang/xianghe/']:
+                town_list = area_tree.xpath('//div[@data-role="ershoufang"]/div')[1].xpath('./a')
             town_urls = []
-            for town in tree.xpath('//div[@class="level2-item"]/a'):
-                town = town.xpath('./@href')
-                if town != area:
-                    town_url = str(base_url + town[0])
-                    town_urls.append(town_url)
-            area_sum["search_sum"]=search_result[0]
-            area_sum["list"]=town_urls
-        # urls[area[0].split("/")[-1]]=area_sum
-        urls[area_name] = area_sum
-    urls["create_dt"]=str(datetime.datetime.now())
-    for key_name in urls.keys():
-        # print   len(urls[key_name])
-        if len(urls[key_name])==0:
-            urls.pop(key_name)
-    return urls
+            town_detail={}
+            for town in town_list:
+                        town_name = town.xpath('./@href')
+                        town_name_u_text=town.xpath('./text()')
+                        town_url = str(g_base_url + town_name[0])
+                        if  town_url!=area_url:
+                            town_urls.append(town_url)
+                            town_detail[town_name_u_text[0]]=town_url
+            area_sum["search_sum"] = search_result
+            area_sum["list"] = town_urls
+            area_sum["detail"]=town_detail
+        g_urls[area_name]=area_sum
+    return g_urls
 def load_urls(filename):
     with open(filename, 'r') as fb:
         urls = json.load(fb)
