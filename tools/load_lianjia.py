@@ -5,7 +5,6 @@ __file_name__ : get_urls.py
 '''
 import urllib2,re,os,datetime,json,time
 from lxml import etree
-
 exec_dict={}
 def res_data(url):
     try:
