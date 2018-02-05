@@ -173,111 +173,142 @@ def save_csv(data,filename,file_dt):
 def get_data(url,url_name,sum,file_dt,down_sum):
     get_data_start=datetime.datetime.now()
     url_name_area=url_name
-    if  down_sum>=30:
-        url_name_town = url.split("/")[-2]
-    else:
-        url_name_town=url.split("/")[-1]
+    # if  down_sum>=30:
+    #     url_name_town = url.split("/")[-2]
+    #     g_pro_type = url.split("/")[-4]
+    #
+    # else:
+    #     url_name_town=url.split("/")[-1]
+    #     g_pro_type = url.split("/")[-3]
+    url_name_town = url.split("/")[-1]
+    g_pro_type = url.split("/")[-3]
+    print   g_pro_type
     file_type = '_'.join(url.split("/")[2:4]).replace(".lianjia.com", "")
     data=res_data(url)
     tree = etree.HTML(data)
     info_dict={}
     seq_sum_i=0
-    start_page=url[0:(10+len('lianjia.com'))]
-    #  = tree.xpath('//div[@class="search-result"]//span')
-    search_result=tree.xpath('//div[@class="search-result"]//span/text()')[0]
-    # print   search_result,url
-    name_area=tree.xpath('//div[@class="level1"]//a[@class="level1-item on"]/text()')[-1]
-    name_town = tree.xpath('//div[@class="level2 gio_plate"]//a[@class="on"]/text()')[-1]
-    # print   name_area,name_town
-    # print   search_result
-    # search_result_sum = search_result.xpath('./text()')[0]
-    # print   search_result_sum
-    try:
-        end_page= tree.xpath('//div[@class="c-pagination"]/a/text()')[-1]##下一页
-    except Exception,e:
-        end_page=u'error'
-    if end_page==u'next_page'or end_page==u'\u4e0b\u4e00\u9875':
-        # print u'继续爬'
-        now_page=int(tree.xpath('//span[@class="current"]/text()')[0])
-        current_page=int(tree.xpath('//span[@class="current"]/text()')[0])+1
-        page_url=tree.xpath('//div[@class="c-pagination"]/a/@href')[-1]
-        # print u'now_page',str(start_page)+str(page_url).replace(u"d"+str(current_page),u"d"+str(now_page))
-        # print u'next_page',str(start_page)+str(tree.xpath('//div[@class="c-pagination"]/a/@href')[-1])
-        next_page=str(start_page)+str(tree.xpath('//div[@class="c-pagination"]/a/@href')[-1])
-        # print u'随机等待'
-        # while end_page==u'下一页'or end_page==u'\u4e0b\u4e00\u9875':
-    for res in tree.xpath('//ul[@class="js_fang_list"]//li'):
-            seq_sum_i+=1
-            url = res.xpath('.//div[@class="info"]//a/@href')[0]##url link /ershoufang/sh4702459.html
-            url_uq = url
-            # # # title =地铁直达，低区出入方便，装修精美，满5年
-            title = str(res.xpath('.//div[@class="info"]//a/@title')).decode("unicode-escape")  ##title 地铁直达，低区出入方便，装修精美，满5年
-            # print title
-            # # # text =4室2厅 | 148.49平| 低区/20层| 朝南
-            text = res.xpath('.//div[@class="info"]//span[@class="info-col row1-text"]/text()')[1].replace("\t","").replace("\n", "")  ##4室2厅 | 148.49平| 低区/20层| 朝南
-            text = text.split("|")
-            text_dict = {"text0": "", "text1": "", "text2": "", "text3": ""}
-            for seq in range(len(text)):
-                text_dict[str("text" + str(seq))] = text[seq]
-            # # # price =960 万
-            price = res.xpath('.//div[@class="info"]//span[@class="total-price strong-num"]/text()')[0].replace("\t","").replace("\n", "") + res.xpath('.//div[@class="info"]//span[@class="unit"]/text()')[0].replace("\t","").replace( "\n", "")  ##960 万
-            # # xiaoqu = scrapy.Field()  ##span虹延小区
-            xiaoqu = res.xpath('.//div[@class="info"]//span[@class="info-col row2-text"]//@title')[0]
-            # # xiaoqu_link = scrapy.Field()  ##/xiaoqu/5011000015991.html
-            xiaoqu_link = res.xpath('.//div[@class="info"]//span[@class="info-col row2-text"]/a/@href')[0]
-            # # area = scrapy.Field()  ## 长宁
-            area = res.xpath('.//div[@class="info"]//span[@class="info-col row2-text"]/a/text()')[0]
-            # # area_link = scrapy.Field()  ##/ershoufang/changning/
-            area_link = res.xpath('.//div[@class="info"]//span[@class="info-col row2-text"]/a/@href')[1]
-            # # area_town = scrapy.Field()  ##泗泾
-            area_town = res.xpath('.//div[@class="info"]//span[@class="info-col row2-text"]/a/text()')[1]
-            # # area_town_link = scrapy.Field()  ##/ershoufang/sijing/
-            area_town_link = res.xpath('.//div[@class="info"]//span[@class="info-col row2-text"]/a/@href')[2]
-            # # create_time = scrapy.Field()  ##|2012年建
-            create_time = res.xpath('.//div[@class="info"]//span[@class="info-col row2-text"]/text()')[-1].replace("\t", "").replace("\n", "").replace("|", "").replace(" ", "").replace(u"年建", "")
-            # print res.xpath('.//div[@class="info"]//span[@class="info-col row2-text"]/text()')[-1].replace("\t","").replace("\n","").replace("|","").replace(" ","")
-            # # price_minor = scrapy.Field()  ##单价31280元/平
-            price_minor = res.xpath('.//div[@class="info"]//span[@class="info-col price-item minor"]/text()')[0].replace("\t", "").replace("\n", "")
-            tag = ','.join(res.xpath('.//div[@class="info"]//span[@class="c-prop-tag2"]/text()'))
-            info_dict_one={
-                'load_time': str(datetime.datetime.now()),
-                'uq_url': url_uq,  # 'uq_url': u'sh4628068'
-                'tag': tag,  # "tag": "满五,有钥匙"
-                'url': url,  # = scrapy.Field()  ##url link /ershoufang/sh4702459.html
-                'title': title,  # = scrapy.Field()  ##title 地铁直达，低区出入方便，装修精美，满5年
-                # 'text':text,# = scrapy.Field()  ##4室2厅 | 148.49平| 低区/20层| 朝南
-                'price': price,  # = scrapy.Field()  ##960 万
-                'xiaoqu': xiaoqu,  # = scrapy.Field()  ##span虹延小区
-                'xiaoqu_link': xiaoqu_link,  # = scrapy.Field()  ##/xiaoqu/5011000015991.html
-                'area': area,  # = scrapy.Field()  ## 长宁
-                'area_link': area_link,  # = scrapy.Field()  ##/ershoufang/changning/
-                'area_town': area_town,  # = scrapy.Field()  ##泗泾
-                'area_town_link': area_town_link,  # = scrapy.Field()  ##/ershoufang/sijing/
-                'create_time': create_time,  # = scrapy.Field()  ##|2012年建
-                'price_minor': price_minor,  # = scrapy.Field()  ##单价31280元/平
-                'text0': text_dict["text0"],  # 4室2厅 | 148.49平| 低区/20层| 朝南
-                'text1': text_dict["text1"],  # 4室2厅 | 148.49平| 低区/20层| 朝南
-                'text2': text_dict["text2"],  # 4室2厅 | 148.49平| 低区/20层| 朝南
-                'text3': text_dict["text3"],  # 4室2厅 | 148.49平| 低区/20层| 朝南
-                'search_result_sum': search_result,
-            }
-            info_dict[url]=info_dict_one
+    start_page=url[0:(11+len('lianjia.com'))]
+    search_result = tree.xpath('//div[@class="resultDes clear"]//span/text()')[0] #area sum
+    xpath_reg_area = '//div[@data-role="%s"]/div/a[@class="selected"]' % g_pro_type ## ershoufang
+    selected=tree.xpath(xpath_reg_area)
+    if  len(selected)==2:
+        selected_area_name_u=selected[0].xpath('./text()')[0] #姑苏 area
+        selected_area_name=selected[0].xpath('./@href')[0]  #/ershoufang/gusu/
+        selected_town_name_u=selected[1].xpath('./text()')[0] #十全街 town
+        selected_town_name=selected[1].xpath('./@href')[0]#/ershoufang/shiquanjie1/
+    page_sum=tree.xpath('//div[@class="page-box house-lst-page-box"]/@page-data')[0].encode('utf-8')
+    page_sum_dict = json.loads(page_sum)
+    page_sum_dict_totalPage=page_sum_dict["totalPage"]
+    page_sum_dict_curPage=page_sum_dict["curPage"]
+    # print   page_sum_dict #{u'totalPage': 5, u'curPage': 1}
+    print   page_sum_dict_totalPage,page_sum_dict_curPage
+    sellListContent=tree.xpath('//ul[@class="sellListContent"]/li')
+    sellListContent_dict={}
+    clear_sum=0
+    for clear in sellListContent:
+        clear_dict={}
+        title_housecode= clear.xpath('.//div[@class="title"]/a/@data-housecode')[0]##107002155593
+        clear_dict["title_housecode"] = title_housecode
+        title_href= clear.xpath('.//div[@class="title"]/a/@href')[0] #https://su.lianjia.com/ershoufang/107000997409.html
+        clear_dict["title_href"]=title_href
+        title_text= clear.xpath('.//div[@class="title"]/a/text()')[0] #钟楼新村 4室2厅 184万
+        clear_dict["title_text"] = title_text
+        address_href= clear.xpath('.//div[@class="address"]/div/a/@href')[0] #https://su.lianjia.com/xiaoqu/239821887922515/
+        clear_dict["address_href"] = address_href
+        address_text= clear.xpath('.//div[@class="address"]/div/a/text()')[0] #钟楼新村
+        clear_dict["address_text"] = address_text
+        flood_text= clear.xpath('.//div[@class="flood"]/div/text()')[0]#中楼层(共4层)2000年建平房  -
+        clear_dict["flood_text"] = flood_text
+        flood_href= clear.xpath('.//div[@class="flood"]/div/a/@href')[0]#https://su.lianjia.com/ershoufang/shiquanjie1/
+        clear_dict["flood_href"] = flood_href
+        flood_area= clear.xpath('.//div[@class="flood"]/div/a/text()')[0]#十全街
+        clear_dict["flood_area"] = flood_area
+        followInfo_text= clear.xpath('.//div[@class="followInfo"]/text()')[0]#8人关注 / 共2次带看 / 4个月以前发布
+        # clear_dict["followInfo_text"] = followInfo_text
+        followInfo=followInfo_text.split("/")
+        # print followInfo[0],followInfo[1],followInfo[-1]
+        followInfo_sum_people=followInfo[0]
+        followInfo_sum_see=followInfo[1]
+        followInfo_release=followInfo[-1]
+        clear_dict["followInfo_sum_people"] = followInfo_sum_people
+        clear_dict["followInfo_sum_see"] = followInfo_sum_see
+        clear_dict["followInfo_release"] = followInfo_release
 
-    filename=str(datetime.datetime.now().strftime( '%Y_%m_%d' ))+"_"+file_type+"_"+area_link.split("/")[-2]+"_"+area_town_link.split("/")[-2]+".csv"
-    filename = str(datetime.datetime.now().strftime('%Y_%m_%d')) + "_" + file_type + "_" + name_area + "_" + name_town + ".csv"
-        # print   filename
-    save_csv(info_dict, filename,file_dt)
+        subway=clear.xpath('.//span[@class="subway"]/text()')
+        haskey=clear.xpath('.//span[@class="haskey"]/text()')
+        taxfree=clear.xpath('.//span[@class="taxfree"]/text()')
+        # print   subway,haskey,taxfree
+        if len(subway)!=0:
+            subway= subway[0] ##距离1号线相门站192米
+            clear_dict["subway"] = subway
+        else:
+            clear_dict["subway"] = ''
+        if len(haskey)!=0:
+            haskey= haskey[0] ##随时看房
+            clear_dict["haskey"] = haskey
+        else:
+            clear_dict["haskey"] = ''
+        if len(taxfree)!=0:
+            taxfree= taxfree[0] ##随时看房
+            clear_dict["taxfree"] = taxfree
+        else:
+            clear_dict["taxfree"] = '' ##房本满五年
+        totalPrice_text= clear.xpath('.//div[@class="totalPrice"]/span/text()')[0]#378
+        clear_dict["totalPrice_text"] = totalPrice_text
+        totalPrice_href= clear.xpath('.//div[@class="totalPrice"]/text()')[0]#万
+        clear_dict["totalPrice_href"] = totalPrice_href
+        unitPrice_text= clear.xpath('.//div[@class="unitPrice"]/span/text()')[0]#单价30265元/平米
+        clear_dict["unitPrice_text"] = unitPrice_text
+        unitPrice_href= clear.xpath('.//div[@class="houseInfo"]/a/@href')[0]  ##东小桥弄散盘
+        # clear_dict["unitPrice_href"] = unitPrice_href
+        houseInfo_a_text= clear.xpath('.//div[@class="houseInfo"]/a/text()')[0]##东小桥弄散盘
+        clear_dict["houseInfo_a_text"] = houseInfo_a_text
+        houseInfo_text= clear.xpath('.//div[@class="houseInfo"]/text()')[0]# | 2室2厅 | 114平米 | 南 | 精装 | 无电梯
+        # clear_dict["houseInfo_text"] = houseInfo_text
+        houseInfo_text_split=houseInfo_text.split("|")
+        houseInfo_text_type=houseInfo_text_split[1] ##2室1厅
+        clear_dict["houseInfo_text_type"] = houseInfo_text_type
+        houseInfo_text_size=houseInfo_text_split[2] ##47.39平米
+        clear_dict["houseInfo_text_size"] = houseInfo_text_size
+        houseInfo_text_major=houseInfo_text_split[3] ##南
+        clear_dict["houseInfo_text_major"] = houseInfo_text_major
+        houseInfo_text_style=houseInfo_text_split[4] ##精装
+        clear_dict["houseInfo_text_style"] = houseInfo_text_style
+        if len(houseInfo_text_split)>5:
+            houseInfo_text_eve=houseInfo_text_split[-1] ##无电梯
+        else:
+            houseInfo_text_eve=u'未知' ##无电梯
+        clear_dict["houseInfo_text_eve"] = houseInfo_text_eve
+        sellListContent_dict[title_housecode] = clear_dict
+        clear_sum+=1
+    down_sum=down_sum+clear_sum
+    filename = str(datetime.datetime.now().strftime('%Y_%m_%d')) + "_" + file_type + "_" + selected_area_name_u + "_" + selected_town_name_u + ".csv"
+    print   filename
+    save_csv(sellListContent_dict, filename, file_dt)
+    # print   sellListContent_dict
+    # print   page_sum_dict_totalPage,page_sum_dict_curPage
+    if  page_sum_dict_totalPage>page_sum_dict_curPage:
+        next_page_i=page_sum_dict_curPage+1
+        now_page=url.split("/")[-1]
+        if now_page[0:2]=='pg':
+            next_page='pg%s' %next_page_i
+            next_url=url.replace(now_page,next_page)
+        else:
+            next_url=url+'pg%s' % next_page_i
+        print next_url, url_name, sum, file_dt, down_sum
+        # get_data(next_url, url_name, sum, file_dt, down_sum)
+
+
+    # print   filename
+    # save_csv(sellListContent_dict, filename,file_dt)
     # print next_page, 'next'
-    get_data_end = datetime.datetime.now()
-    msg = 'start:' + str(get_data_start) + ',' + 'end:' + str(get_data_end) + ',execute:' + str(get_data_end - get_data_start)
-    down_sum=len(info_dict)+down_sum
-    print "%s,%s,load_sum:%s,down_sum:%s" %(name_area,name_town,search_result,down_sum)
-    # try:
-    #     print os.getpid(),os.getppid()
-    # except Exception,e:
-    #     pass
-    get_data(next_page,url_name,sum,file_dt,down_sum)
-    print "info_all,%s,%s,load_sum:%s,down_sum:%s" % (name_area, name_town, search_result, down_sum)
+    # get_data_end = datetime.datetime.now()
+    # msg = 'start:' + str(get_data_start) + ',' + 'end:' + str(get_data_end) + ',execute:' + str(get_data_end - get_data_start)
+    # down_sum=len(info_dict)+down_sum
+    # print "%s,%s,load_sum:%s,down_sum:%s" %(name_area,name_town,search_result,down_sum)
+    # get_data(next_page,url_name,sum,file_dt,down_sum)
+    # print "info_all,%s,%s,load_sum:%s,down_sum:%s" % (name_area, name_town, search_result, down_sum)
 def config(url):
     es_url_type = es_url.split("/")[-2]
     current_dir = os.getcwd()
