@@ -3,6 +3,10 @@
 __author__ : renou
 __file_name__ : get_urls.py
 '''
+
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 import urllib2,re,os,datetime,json,time
 from lxml import etree
 exec_dict={}
@@ -11,15 +15,18 @@ def res_data(url):
         response = urllib2.urlopen(url,timeout=30)
         if response.getcode() == 200:
             data = response.read()
-        return data
+            return data
+        else:
+            print 'error',response.getcode()
     except urllib2.URLError,e:
-        ##try 3 time
+            print url,e
+            ##try 3 time
             try_t = True
             try_t_s = 0
             while try_t:
                 try:
-                    print   '*'*30,try_t_s
-                    response = urllib2.urlopen(url,timeout=30+30*try_t_s)
+                    print   '*'*30,try_t_s,url
+                    response = urllib2.urlopen(url,timeout=30+10*try_t_s)
                     data = response.read()
                     return data
                 except urllib2.URLError, e:
@@ -61,44 +68,52 @@ def res_data(url):
     #     "UCWEB7.0.2.37/28/999",
     # ]
     # import random
-    # agent_one = random.choice(agents)
-    # timeout = 10
+    # timeout = 30
     # try:
+    #     agent_one = random.choice(agents)
     #     request_headers = {'User-Agent': agent_one}
     #     request = urllib2.Request(url, None, request_headers)
     #     response = urllib2.urlopen(request, timeout=timeout)
     #     if response.getcode() == 200:
     #         data = response.read()
-    #         # print data
+    #         return data
     # except urllib2.URLError as e:
     #     ##try 3 time
+    #     print url,e
     #     try_t = True
     #     try_t_s = 0
     #     while try_t:
     #         try:
-    #             print try_t_s
-    #             response = urllib2.urlopen(url)
-    #             data = response.read()
-    #             # print data
+    #             print   '*' * 30, try_t_s, url
+    #             agent_one = random.choice(agents)
+    #             request_headers = {'User-Agent': agent_one}
+    #             request = urllib2.Request(url, None, request_headers)
+    #             response = urllib2.urlopen(request, timeout=30+30*try_t_s)
+    #             if response.getcode() == 200:
+    #                 data = response.read()
+    #                 return data
     #         except urllib2.URLError, e:
-    #             pass
+    #             print url,e
     #         try_t_s += 1
     #         if try_t_s == 3:
     #             try_t = False
     # finally:
-    #     return data
+    #     # return data
+    #     pass
 def get_urls(es_url):
     g_urls= {"create_dt":str(datetime.datetime.now()),}
     g_pro_name=es_url.split("/")[2].split(".")[0]
     g_pro_type = es_url.split("/")[-2]
     g_base_url = es_url.replace("/" + g_pro_type + "/", "")
+
     data = res_data(es_url)
     tree = etree.HTML(data)
     if  g_pro_name in ['bj']:
         area_list=tree.xpath('//div[@class="sub_nav section_sub_nav"]/a')
     elif    g_pro_name in ['sh','su']:
-        xpath_reg_area='//div[@data-role="%s"]/div/a'%g_pro_type
+        xpath_reg_area='//div[@data-role="%s"]//div/a'%g_pro_type
         area_list=tree.xpath(xpath_reg_area)
+    # print area_list
     for area in area_list:
         area_sum = {}
         area_name = area.xpath('./text()')[0]
@@ -154,18 +169,12 @@ def save_csv(data,filename,file_dt):
     if os.path.exists(filename):
         pass
     else:
-        import sys
-        reload(sys)
-        sys.setdefaultencoding('utf-8')
         data_key = ','.join(data[data.keys()[0]].keys())
         # print data_key
         with open(filename,'ab') as file_write:
             file_write.write(data_key)
             file_write.write('\n')
     with open(filename,'ab') as file_write:
-        import sys
-        reload(sys)
-        sys.setdefaultencoding('utf-8')
         for data_key in data.keys():
             data_values = '"' + '","'.join(data[data_key].values()) + '"'
             file_write.write(data_values+"\n")
@@ -173,16 +182,9 @@ def save_csv(data,filename,file_dt):
 def get_data(url,url_name,sum,file_dt,down_sum):
     get_data_start=datetime.datetime.now()
     url_name_area=url_name
-    # if  down_sum>=30:
-    #     url_name_town = url.split("/")[-2]
-    #     g_pro_type = url.split("/")[-4]
-    #
-    # else:
-    #     url_name_town=url.split("/")[-1]
-    #     g_pro_type = url.split("/")[-3]
     url_name_town = url.split("/")[-1]
     g_pro_type = url.split("/")[-3]
-    print   g_pro_type
+    # print   g_pro_type
     file_type = '_'.join(url.split("/")[2:4]).replace(".lianjia.com", "")
     data=res_data(url)
     tree = etree.HTML(data)
@@ -202,7 +204,7 @@ def get_data(url,url_name,sum,file_dt,down_sum):
     page_sum_dict_totalPage=page_sum_dict["totalPage"]
     page_sum_dict_curPage=page_sum_dict["curPage"]
     # print   page_sum_dict #{u'totalPage': 5, u'curPage': 1}
-    print   page_sum_dict_totalPage,page_sum_dict_curPage
+    # print   page_sum_dict_totalPage,page_sum_dict_curPage
     sellListContent=tree.xpath('//ul[@class="sellListContent"]/li')
     sellListContent_dict={}
     clear_sum=0
@@ -284,10 +286,14 @@ def get_data(url,url_name,sum,file_dt,down_sum):
         clear_sum+=1
     down_sum=down_sum+clear_sum
     filename = str(datetime.datetime.now().strftime('%Y_%m_%d')) + "_" + file_type + "_" + selected_area_name_u + "_" + selected_town_name_u + ".csv"
-    print   filename
+    # print   filename
     save_csv(sellListContent_dict, filename, file_dt)
     # print   sellListContent_dict
     # print   page_sum_dict_totalPage,page_sum_dict_curPage
+    get_data_end = datetime.datetime.now()
+    msg = 'start:' + str(get_data_start) + ',' + 'end:' + str(get_data_end) + ',execute:' + str(get_data_end - get_data_start)
+    # down_sum=len(info_dict)+down_sum
+
     if  page_sum_dict_totalPage>page_sum_dict_curPage:
         next_page_i=page_sum_dict_curPage+1
         now_page=url.split("/")[-1]
@@ -296,28 +302,25 @@ def get_data(url,url_name,sum,file_dt,down_sum):
             next_url=url.replace(now_page,next_page)
         else:
             next_url=url+'pg%s' % next_page_i
-        print next_url, url_name, sum, file_dt, down_sum
-        # get_data(next_url, url_name, sum, file_dt, down_sum)
+        # print next_url, url_name, sum, file_dt, down_sum
+        # print "%s:%s,%s,load_sum:%s,down_sum:%s,next url:%s" % (str(datetime.datetime.now()),selected_area_name_u, selected_town_name_u, search_result, down_sum,next_url)
+        get_data(next_url, url_name, sum, file_dt, down_sum)
+        pass
+    else:
+        # print "%s,%s,%s,load_sum:%s,down_sum:%s,end" % (str(datetime.datetime.now()),selected_area_name_u, selected_town_name_u, search_result, down_sum)
+        pass
+    if page_sum_dict_totalPage == page_sum_dict_curPage:
+        print "%s,info all:%s,%s,load_sum:%s,down_sum:%s" % (str(datetime.datetime.now()),selected_area_name_u, selected_town_name_u, search_result, down_sum)
 
-
-    # print   filename
-    # save_csv(sellListContent_dict, filename,file_dt)
-    # print next_page, 'next'
-    # get_data_end = datetime.datetime.now()
-    # msg = 'start:' + str(get_data_start) + ',' + 'end:' + str(get_data_end) + ',execute:' + str(get_data_end - get_data_start)
-    # down_sum=len(info_dict)+down_sum
-    # print "%s,%s,load_sum:%s,down_sum:%s" %(name_area,name_town,search_result,down_sum)
-    # get_data(next_page,url_name,sum,file_dt,down_sum)
-    # print "info_all,%s,%s,load_sum:%s,down_sum:%s" % (name_area, name_town, search_result, down_sum)
 def config(url):
-    es_url_type = es_url.split("/")[-2]
+    es_url_type = url.split("/")[-2]
     current_dir = os.getcwd()
     data_dir = current_dir + os.sep + "data"
     if os.path.exists(data_dir):
         pass
     else:
         os.mkdir(data_dir)
-    file_type='_'.join(es_url.split("/")[2:4]).replace(".lianjia.com", "")
+    file_type='_'.join(url.split("/")[2:4]).replace(".lianjia.com", "")
     filename = data_dir + os.sep + file_type + ".list"
     if os.path.exists(filename):
         urls = load_urls(filename)
@@ -326,9 +329,10 @@ def config(url):
         file_dt=datetime.datetime.strptime(file_dt, "%Y-%m-%d %H:%M:%S.%f")
         diff_dt=now_dt-file_dt
         diff_s=diff_dt.days*24*60*60+diff_dt.seconds
-        if  diff_s>=1*24*60*60: ## days
+        if  diff_s>=0*24*60*60: ##1 days
             urls = get_urls(es_url)
             save_json(urls, filename)
+
     else:
         urls = get_urls(es_url)
         save_json(urls, filename)
@@ -357,9 +361,13 @@ if __name__ == '__main__':
     start_dt = datetime.datetime.now()
     print   "start_dt:",start_dt
     try:
-        # es_url = "http://bj.lianjia.com/ershoufang/"
-        es_url  =   "http://su.lianjia.com/ditiefang/"
-        es_url = "http://su.lianjia.com/ershoufang/"
+        # es_url = "https://bj.lianjia.com/ershoufang/"
+        es_url  =   "https://su.lianjia.com/ditiefang/"
+        es_url = "https://su.lianjia.com/ershoufang/"
+
+        if len(sys.argv)>=2:
+            es_url = sys.argv[1]
+        # es_url = "https://sh.lianjia.com/ershoufang/"
         file_dt = '_'.join(es_url.split("/")[2:4]).replace(".lianjia.com", "") + "_" + str(datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S_%f_%p'))
         urls=config(es_url)
         if urls.has_key("create_dt"):
@@ -377,19 +385,25 @@ if __name__ == '__main__':
             exec_dict[url_name]={"search_sum":search_sum}
             for url in url_list:
                 pool.apply_async(get_data, args=(url,url_name,search_sum,file_dt,0,), )
+                # pass
         pool.close()
         pool.join()
     except Exception,e:
         print e
     res_sum = dataset_config(file_dt)
-    # print urls
+    # print res_sum
+    for res_sum_name in res_sum.keys():
+        if sys.platform=='linux2':
+            res_sum[res_sum_name.decode("utf-8")] = res_sum[res_sum_name]
+        else:
+            res_sum[res_sum_name.decode("gbk")] = res_sum[res_sum_name]
     load_sum=0
     down_sum=0
     for data_key in urls.keys():
-        if res_sum.has_key(data_key.encode("gbk")):
-            print data_key, 'load data sum', urls[data_key]["search_sum"], 'down data sum', res_sum[data_key.encode("gbk")]
+        if res_sum.has_key(data_key):
+            print data_key, 'load data sum', urls[data_key]["search_sum"], 'down data sum', res_sum[data_key]
             load_sum += int(urls[data_key]["search_sum"])
-            down_sum += int(res_sum[data_key.encode("gbk")])
+            down_sum += int(res_sum[data_key])
         else:
             print data_key, 'load data sum', urls[data_key]["search_sum"]
             load_sum += int(urls[data_key]["search_sum"])
