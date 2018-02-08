@@ -326,7 +326,6 @@ def dataset_config(file_dt):
     try:
         file_sum={}
         file_list=os.listdir(os.getcwd()+os.sep+"data"+os.sep+file_dt)
-        # file_list = os.listdir(os.getcwd() + os.sep + file_dt)
         file_name=os.getcwd() + os.sep +"data"+os.sep+file_dt+"_all.csv"
         for file_one in file_list:
             file_one_name=os.getcwd() + os.sep +"data"+os.sep+ file_dt+os.sep+file_one
