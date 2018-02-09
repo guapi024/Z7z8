@@ -4,100 +4,66 @@ __author__ : renou
 __file_name__ : proxy_http.py
 '''
 
-import urllib
 import random
 import re
 import sys
-# apiUrl="http://www.89ip.cn/apijk/?&tqsl=1000&sxa=&sxb=&tta=&ports=&ktip=&cf=1"
-# res = urllib.urlopen(apiUrl).read()
-# pt=re.compile(r'<BR>.*<BR>',re.S)
-# ress=re.findall(pt,res)
-# res=ress[0].split('<BR>')
-# # print list(set(res))
-# print len(res)
-# while '' in res:
-#     res.remove('')
-# print res
-# print len(res)
-
-import requests
-import urllib
 import urllib2
-import re
 import tools_dict
+import requests
+import datetime
+import json
+from lxml import etree
 class main(object):
         def __init__(self):
-                self.random_choice_user_agents=tools_dict.random_choice_user_agents
-                self.load_proxy_urls={}
-                # self.load_proxy_urls["http://www.89ip.cn/apijk/?&tqsl=999999999&sxa=&sxb=&tta=&ports=&ktip=&cf=1"]="url_89ip"
-                self.load_proxy_urls["http://www.xicidaili.com/nn/"]="url_xicidaili"
-                self.load_proxy_urls["http://www.xicidaili.com/nt/"]="url_xicidaili"
-                self.load_proxy_reg={}
-                for name in self.load_proxy_urls.keys():
-                        self.load_proxy_reg[self.load_proxy_urls[name]]=""
-                self.load_proxy_reg['url_89ip']="r'\d+\.\d+.\d+.\d+:\d+'"
-                self.load_proxy_reg['url_xicidaili'] = "r'\d+\.\d+.\d+.\d+"
-        def get_proxy_ips(self):
-                for ipname in self.load_proxy_urls.keys():
-                        # print ipname,self.load_proxy_urls[ipname]
-                        self.get_proxy_data(ipname, self.load_proxy_reg[self.load_proxy_urls[ipname]])
-        def get_proxy_data(self,proxy_url,proxy_reg):
-                print   proxy_url,proxy_reg
-                res_data=urllib2.urlopen(proxy_url)
-                # print res_data.read()
-        def start(self):
-                self.get_proxy_ips()
+            global  urls
+            urls={}
+            urls["url_66ip"]="http://www.66ip.cn"
+        def get_proxy_ips(self,ips):
+            for key_name in urls:
+                for seq in range(1,6):
+                    # print seq
+                    url=urls[key_name]+"/%s.html" %seq
+                    data=self.get_proxy_data(key_name,url)
+                    tree_data = etree.HTML(data)
+                    xpath_data = tree_data.xpath('//*[@id="main"]/div/div[1]/table/tr')[1:]
+                    for ip_data in xpath_data:
+                        ip_data_list=ip_data.xpath('.//text()')
+                        ips[ip_data_list[0]]=str(ip_data_list[0]+":"+ip_data_list[1])
+            return ips
+        def get_proxy_data(self,key_name,url):
+            res_data=urllib2.urlopen(url)
+            data=res_data.read()
+            return data
+        def get_ips_check(self,ip):
+                testurl = "http://httpbin.org/get"
+                try:
+                    random_choice_user_agents = tools_dict.random_choice_user_agents
+                    proxy = {'http': ip}
+                    headers = {'User-Agent': random.choice(random_choice_user_agents)}
+                    response = requests.get(testurl, headers=headers, proxies=proxy,timeout=10)
+                    response.encoding = 'utf-8'
+                    res= response.text
+                    data=json.loads(res)
+                    print ip,'ok',"origin is ",data["origin"]
+                except Exception, e:
+                    print ip,'fail'
+                    # print e
+        def config(self):
+            ips={"dt":str(datetime.datetime.now()),}
+            ips=self.get_proxy_ips(ips)
+            # print ips
+            import multiprocessing
+            pool = multiprocessing.Pool(processes=20)
+            from multiprocessing import Process, Lock
+            for ips_name in ips.keys():
+                if ips_name!="dt":
+                    ip=ips[ips_name]
+                    get_ips_check=self.get_ips_check(ip)
+                    pool.apply_async(get_ips_check, args=(ip,), )
+            pool.close()
+            pool.join()
+if __name__ == '__main__':
+    proxy=main()
+    proxy.config()
 
-proxy=main()
-print proxy
-# proxy.start()
 
-random_choice_ips=[]
-
-
-# http://www.xicidaili.com/
-
-
-
-# res_get,random_choice_url_one=random_choice_url(random_choice_urls)
-# print res_get.status_code
-# ip_re = re.findall(r'\d+\.\d+.\d+.\d+:\d+', res_get.text, re.S)
-# # for ip in ip_re:
-# #     random_choice_ips.append(ip.strip())
-# random_choice_ips=map(lambda x:x,ip_re)
-# random_choice_ip_one=random.choice(random_choice_ips)
-# import datetime
-# ip_dict={}
-# ip_dict['time']=str(datetime.datetime.now())
-# ip_dict['random_choice_ips']=random_choice_ips
-# ip_dict['random_choice_url_one']=random_choice_url_one
-
-random_choice_user_agents =tools_dict.random_choice_user_agents
-# testurl="http://www.ip181.com/"
-# testurl="https://www.baidu.com/s?ie=utf8&oe=utf8&wd=ip&tn=94749616_hao_pg&ch=3"
-testurl='http://www.whatismyip.com.tw/'
-testurl="http://ip.chinaz.com/getip.aspx"
-# testurl="http://www.renouh.com"
-# random_choice_ips=["110.73.3.198:8123",
-# "24.113.137.207:53281","182.253.83.58:65205","173.249.15.109:3128","200.85.120.218:8080","172.93.111.106:1080","43.239.75.242:8080",
-# "104.243.47.152:1080","182.253.176.170:3128","213.160.167.31:80","24.113.137.207:53281"
-# ]
-random_choice_ips=["110.136.233.160:80",]
-for i in    random_choice_ips:
-    # print i
-    try:
-        ip=i
-        # print 'proxy:',ip
-        proxy = {'http': ip}
-        headers = {'User-Agent': random.choice(random_choice_user_agents)}
-        # response = requests.get(testurl, headers =headers , proxies = proxy,)
-        response = requests.get(testurl, headers=headers)
-        # response.encoding = 'gbk'
-        response.encoding = 'utf-8'
-        # print response.status_code,response.text
-        local_ip = re.findall(r'\d+\.\d+.\d+.\d+', response.text, re.S)
-        # print local_ip
-        print 'ok',local_ip
-        print response.text
-    except Exception,e:
-        print 'fail',i,e
