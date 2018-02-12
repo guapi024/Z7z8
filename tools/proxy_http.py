@@ -26,7 +26,7 @@ def get_proxy_ips(ips):
                 'url_reg':'.html',
                 'ip_data_reg':'0',
                 'ip_port_reg':'1',
-                'end_paga':'6'
+                'end_paga':'10'
                 },
         "kuaidaili_inha": {
                 'url': 'https://www.kuaidaili.com/free/inha',
@@ -35,7 +35,7 @@ def get_proxy_ips(ips):
                 'url_reg': '',
                 'ip_data_reg':'1',
                 'ip_port_reg':'3',
-                'end_paga':'6'
+                'end_paga':'10'
         },
          "kuaidaili_intr": {
              'url': 'https://www.kuaidaili.com/free/intr',
@@ -44,7 +44,7 @@ def get_proxy_ips(ips):
              'url_reg': '',
              'ip_data_reg': '1',
              'ip_port_reg': '3',
-             'end_paga': '6'
+             'end_paga': '10'
          },
         "ip181": {
             'url': 'http://www.ip181.com/',
@@ -114,51 +114,44 @@ def get_proxy_ips(ips):
                 data=get_proxy_data(key_name,url_full)
                 tree_data = etree.HTML(data)
                 xpath_data = tree_data.xpath(xpath_reg1)[1:]
-                # print xpath_data
                 for ip_data in xpath_data:
                     ip_data_list=ip_data.xpath(xpath_reg2)
-                    # print ip_data_list[ip_data_reg]
-                    # print ip_data_list[ip_port_reg]
-                    # print str(ip_data_list[ip_data_reg] + ":" + ip_data_list[ip_port_reg])
-                    # try:
-                    #     print str(ip_data_list[ip_data_reg]+":"+ip_data_list[ip_port_reg])
-                    # except Exception,e:
-                    #     print e
                     ips[ip_data_list[ip_data_reg]]=str(ip_data_list[ip_data_reg]+":"+ip_data_list[ip_port_reg])
             except Exception,e:
                 pass
     return ips
 
+
 def get_proxy_data(key_name,url):
     try:
-            random_choice_user_agents = tools_dict.random_choice_user_agents
-            headers = {'User-Agent': random.choice(random_choice_user_agents)}
-            req = urllib2.Request(url,headers=headers)
-            response = urllib2.urlopen(req)
-            if response.getcode() == 200:
-                data = response.read()
-                return data
+        random_choice_user_agents = tools_dict.random_choice_user_agents
+        headers = {'User-Agent': random.choice(random_choice_user_agents)}
+        req = urllib2.Request(url,headers=headers)
+        response = urllib2.urlopen(req)
+        if response.getcode() == 200:
+            data = response.read()
+            return data
     except urllib2.URLError,e:
-            try_t = True
-            try_t_s = 0
-            while try_t:
-                try:
-                    time.sleep(1)
-                    print   '*try*' * 30, try_t_s+1, url
-                    random_choice_user_agents = tools_dict.random_choice_user_agents
-                    headers = {'User-Agent': random.choice(random_choice_user_agents)}
-                    req = urllib2.Request(url, headers=headers)
-                    response = urllib2.urlopen(req, timeout=30 + 10 * try_t_s)
-                    if response.getcode() == 200:
-                        data = response.read()
-                        return data
-                    else:
-                        print 'error', response.getcode(), 'try ', try_t_s, ' s'
-                except urllib2.URLError, e:
-                    print 'error:', url, e
-                try_t_s += 1
-                if try_t_s == 3:
-                    try_t = False
+        try_t = True
+        try_t_s = 0
+        while try_t:
+            try:
+                time.sleep(1)
+                print   '*try*' * 30, try_t_s+1, url
+                random_choice_user_agents = tools_dict.random_choice_user_agents
+                headers = {'User-Agent': random.choice(random_choice_user_agents)}
+                req = urllib2.Request(url, headers=headers)
+                response = urllib2.urlopen(req, timeout=30 + 10 * try_t_s)
+                if response.getcode() == 200:
+                    data = response.read()
+                    return data
+                else:
+                    print 'error', response.getcode(), 'try ', try_t_s, ' s'
+            except urllib2.URLError, e:
+                print 'error:', url, e
+            try_t_s += 1
+            if try_t_s == 3:
+                try_t = False
 def get_ips_check(ip):
         testurl = "http://httpbin.org/get"
         try:
@@ -169,21 +162,14 @@ def get_ips_check(ip):
             response.encoding = 'utf-8'
             res= response.text
             data=json.loads(res)
-            # print ip,'ok',"origin is ",data["origin"]
-            # print 'get_ips_check',data
             if ip.split(":")[0] in data["origin"]:
                 print ip,'ok'
-            else:
-                pass
         except Exception, e:
-            # print e
             get_ips_check_urllib2(ip)
 def get_ips_check_urllib2(ip):
     testurl = "http://httpbin.org/get"
-    # print ip
     try:
         random_choice_user_agents = tools_dict.random_choice_user_agents
-        headers = {'User-Agent': random.choice(random_choice_user_agents)}
         request = urllib2.Request(testurl)
         request.add_header('User-Agent', random.choice(random_choice_user_agents))
         request.add_header('Pragma', 'no-cache')
@@ -192,16 +178,33 @@ def get_ips_check_urllib2(ip):
         res = opener.open(request,timeout=10)
         ret_data = res.read()
         data = json.loads(ret_data)
-        # print ip,'ok',"origin is ",data["origin"]
-        # print 'get_ips_check_urllib2',data
         if ip.split(":")[0] in data["origin"]:
             print ip, 'ok'
-        else:
-            pass
     except urllib2.URLError,e:
-        # print e
-        # get_ips_check(ip)
-        pass
+        try_t = True
+        try_t_s = 0
+        while try_t:
+            try:
+                time.sleep(1)
+                print   '*try*' * 30, try_t_s + 1,ip ,testurl
+                random_choice_user_agents = tools_dict.random_choice_user_agents
+                request = urllib2.Request(testurl)
+                request.add_header('User-Agent', random.choice(random_choice_user_agents))
+                request.add_header('Pragma', 'no-cache')
+                request.set_proxy(ip, 'http')
+                opener = urllib2.build_opener()
+                res = opener.open(request, timeout=10+10*try_t_s)
+                ret_data = res.read()
+                data = json.loads(ret_data)
+                if ip.split(":")[0] in data["origin"]:
+                    print ip, 'ok'
+                else:
+                    print 'error', res.getcode(), 'try ', try_t_s, ' s'
+            except urllib2.URLError, e:
+                print 'error:', testurl, e
+            try_t_s += 1
+            if try_t_s == 3:
+                try_t = False
 
 def config():
     ips={"dt":str(datetime.datetime.now()),}
@@ -216,6 +219,7 @@ def config():
         if ips_name!="dt":
             ip=ips[ips_name]
             # get_ips_check_urllib2(ip)
+            ##choice
             pool.apply_async(get_ips_check_urllib2, args=(ip,), )
             # pool.apply_async(get_ips_check, args=(ip,), )
     pool.close()
