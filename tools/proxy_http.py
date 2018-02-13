@@ -121,7 +121,6 @@ def get_proxy_ips(ips):
                 pass
     return ips
 
-
 def get_proxy_data(key_name,url):
     try:
         random_choice_user_agents = tools_dict.random_choice_user_agents
@@ -209,7 +208,6 @@ def get_ips_check_urllib2(ip):
 def config():
     ips={"dt":str(datetime.datetime.now()),}
     ips=get_proxy_ips(ips)
-    # print ips
     # ips["182.74.200.200:80"]="182.74.200.200:80"
     # print ips
     import multiprocessing
