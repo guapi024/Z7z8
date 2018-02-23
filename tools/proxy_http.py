@@ -208,8 +208,6 @@ def get_ips_check_urllib2(ip):
 def config():
     ips={"dt":str(datetime.datetime.now()),}
     ips=get_proxy_ips(ips)
-    # ips["182.74.200.200:80"]="182.74.200.200:80"
-    # print ips
     import multiprocessing
     pool = multiprocessing.Pool(processes=20)
     from multiprocessing import Process, Lock
