@@ -204,7 +204,6 @@ def get_ips_check_urllib2(ip):
             try_t_s += 1
             if try_t_s == 3:
                 try_t = False
-
 def config():
     ips={"dt":str(datetime.datetime.now()),}
     ips=get_proxy_ips(ips)
