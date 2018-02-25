@@ -219,7 +219,7 @@ def config():
             # pool.apply_async(get_ips_check, args=(ip,), )
     pool.close()
     pool.join()
-    #
+
 if __name__ == '__main__':
     config()
 
