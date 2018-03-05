@@ -78,7 +78,6 @@ def get_urls(url):
     g_base_url = url.replace("/" + g_pro_type + "/", "")
     data = res_data(url)
     tree = etree.HTML(data)
-    # print data
 
     if  g_pro_name in ['bj']:
         area_list=tree.xpath('//div[@class="sub_nav section_sub_nav"]/a')
