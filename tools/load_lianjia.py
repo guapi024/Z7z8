@@ -83,7 +83,7 @@ def get_urls(url):
     elif    g_pro_name in ['sh','su']:
         xpath_reg_area='//div[@data-role="%s"]//div/a'%g_pro_type
         area_list=tree.xpath(xpath_reg_area)
-    # print area_list
+
     for area in area_list:
         area_sum = {}
         area_name = area.xpath('./text()')[0]
