@@ -137,7 +137,6 @@ def save_csv(data,filename,file_dt):
     else:
         os.mkdir(data_dir)
     filename=data_dir+filename
-    # print   filename
     if os.path.exists(filename):
         pass
     else:
