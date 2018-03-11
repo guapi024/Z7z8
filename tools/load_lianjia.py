@@ -142,7 +142,7 @@ def save_csv(data,filename,file_dt):
         pass
     else:
         data_key = ','.join(data[data.keys()[0]].keys())
-        # print data_key
+
         with open(filename,'ab') as file_write:
             file_write.write(data_key)
             file_write.write('\n')
