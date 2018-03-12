@@ -286,7 +286,6 @@ def get_data(url,url_name,sum,file_dt,down_sum):
                     next_url=url.replace(now_page,next_page)
                 else:
                     next_url=url+'pg%s' % next_page_i
-                # print next_url, url_name, sum, file_dt, down_sum
                 print "%s:%s,%s,load_sum:%s,down_sum:%s,next url:%s" % (str(datetime.datetime.now()),selected_area_name_u, selected_town_name_u, search_result, down_sum,next_url)
                 get_data(next_url, url_name, sum, file_dt, down_sum)
             # else:
