@@ -361,6 +361,7 @@ if __name__ == '__main__':
             exec_dict[url_name]={"search_sum":search_sum}
             for url in url_list:
                 pool.apply_async(get_data, args=(url,url_name,search_sum,file_dt,0,), )
+
                 # print "%s,info start:url:%s,url_name:%s" % (str(datetime.datetime.now()),url,url_name)
         pool.close()
         pool.join()
