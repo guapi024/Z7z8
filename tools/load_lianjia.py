@@ -347,7 +347,7 @@ if __name__ == '__main__':
 
         es_url = "https://sh.lianjia.com/ershoufang/"
 
-        # es_url = "https://bj.lianjia.com/ershoufang/"
+        es_url = "https://bj.lianjia.com/ershoufang/"
 
 
         if len(sys.argv)>=2:
