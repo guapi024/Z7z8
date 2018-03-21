@@ -349,7 +349,6 @@ if __name__ == '__main__':
 
         es_url = "https://bj.lianjia.com/ershoufang/"
 
-
         if len(sys.argv)>=2:
             es_url = sys.argv[1]
         file_dt = '_'.join(es_url.split("/")[2:4]).replace(".lianjia.com", "") + "_" + str(datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S_%f_%p'))
