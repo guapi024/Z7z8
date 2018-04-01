@@ -394,6 +394,7 @@ if __name__ == '__main__':
         end_dt = datetime.datetime.now()
         msg = 'start:' + str(start_dt) + ',' + 'end:' + str(end_dt) + ',execute:' + str(end_dt - start_dt), 'total:load_sum', load_sum, ',down_sum', down_sum
         print   "msg:", msg
+
     except Exception,e:
         print 'error',e
 
