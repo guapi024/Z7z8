@@ -398,6 +398,7 @@ if __name__ == '__main__':
         print   "msg:", msg
 
     except Exception,e:
+
         print 'error',e
 
     print   "all end",str(datetime.datetime.now())
