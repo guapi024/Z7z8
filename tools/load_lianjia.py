@@ -395,6 +395,7 @@ if __name__ == '__main__':
                 print data_key, 'load data sum', urls[data_key]["search_sum"], 'down data sum', res_sum[data_key]
                 load_sum += int(urls[data_key]["search_sum"])
                 down_sum += int(res_sum[data_key])
+
             else:
                 print data_key, 'load data sum', urls[data_key]["search_sum"]
                 load_sum += int(urls[data_key]["search_sum"])
