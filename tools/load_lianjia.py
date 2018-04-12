@@ -379,7 +379,7 @@ if __name__ == '__main__':
 
         res_sum = dataset_config(file_dt)
 
-        print "*"*30,'info',"*"*30
+        print "*"*30,'info:',"*"*30
 
         for res_sum_name in res_sum.keys():
             if sys.platform == 'linux2':
