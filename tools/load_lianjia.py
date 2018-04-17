@@ -369,7 +369,7 @@ if __name__ == '__main__':
             search_sum=urls[url_name]["search_sum"]
             url_list=urls[url_name]["list"]
             exec_dict[url_name]={"search_sum":search_sum}
-            
+
             for url in url_list:
                 pool.apply_async(get_data, args=(url,url_name,search_sum,file_dt,0,), )
 
