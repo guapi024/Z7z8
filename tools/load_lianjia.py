@@ -347,7 +347,6 @@ if __name__ == '__main__':
     print   "start_dt:",start_dt
 
     try:
-
         es_url  =   "https://sh.lianjia.com/ditiefang/"
 
         # es_url  =   "https://sh.lianjia.com/ershoufang/"
