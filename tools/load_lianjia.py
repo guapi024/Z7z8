@@ -388,7 +388,6 @@ if __name__ == '__main__':
 
         load_sum = 0
         down_sum = 0
-
         for data_key in urls.keys():
             if res_sum.has_key(data_key):
                 print data_key, 'load data sum:', urls[data_key]["search_sum"], 'down data sum', res_sum[data_key]
