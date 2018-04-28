@@ -402,7 +402,6 @@ if __name__ == '__main__':
 
     except Exception,e:
         print 'error',e
-
     print   "all end",str(datetime.datetime.now())
 
 
