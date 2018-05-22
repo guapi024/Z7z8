@@ -294,6 +294,7 @@ def get_data(url,url_name,sum,file_dt,down_sum):
                 print "%s,info all:%s,%s,load_sum:%s,down_sum:%s" % (str(datetime.datetime.now()),selected_area_name_u, selected_town_name_u, search_result, down_sum)
     except Exception,e:
         print url,url_name,sum,file_dt,down_sum,'error',e
+
 def config(url):
     es_url_type = url.split("/")[-2]
     current_dir = os.getcwd()
