@@ -70,6 +70,7 @@ def res_data(url):
                 try_t_s += 1
                 if try_t_s == 3:
                     try_t = False
+
 def get_urls(url):
     g_urls= {"create_dt":str(datetime.datetime.now()),}
     g_pro_name=url.split("/")[2].split(".")[0]
