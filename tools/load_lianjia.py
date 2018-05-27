@@ -126,7 +126,6 @@ def save_json(data,filename):
     # print data
     with open(filename,'wb') as f_save_json:
         f_save_json.write(json.dumps(data))
-
         # f_save_json.write(json.dumps(data, ensure_ascii=False))
         # f_save_json.write(data)
 
