@@ -128,7 +128,6 @@ def save_json(data,filename):
         f_save_json.write(json.dumps(data))
         # f_save_json.write(json.dumps(data, ensure_ascii=False))
         # f_save_json.write(data)
-
 def save_csv(data,filename,file_dt):
     current_dir = os.getcwd()
     data_dir = current_dir+os.sep + "data"+os.sep+file_dt+os.sep
