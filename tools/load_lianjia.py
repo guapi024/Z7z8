@@ -155,7 +155,6 @@ def get_data(url,url_name,sum,file_dt,down_sum):
         url_name_area=url_name
         url_name_town = url.split("/")[-1]
         g_pro_type = url.split("/")[-3]
-        # print   g_pro_type
         file_type = '_'.join(url.split("/")[2:4]).replace(".lianjia.com", "")
         data=res_data(url)
         tree = etree.HTML(data)
