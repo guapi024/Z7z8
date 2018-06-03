@@ -150,6 +150,7 @@ def save_csv(data,filename,file_dt):
             file_write.write(data_values+"\n")
 
 def get_data(url,url_name,sum,file_dt,down_sum):
+
     try:
         get_data_start=datetime.datetime.now()
         url_name_area=url_name
