@@ -25,7 +25,6 @@ if os.path.exists(datadir)==False:
     os.mkdir(datadir)
 else:
     pass
-
 logfile=logdir+os.path.split(os.path.realpath( sys.argv[0]))[-1].split('.')[0]+logdt+".log"
 datafile=datadir+os.path.split(os.path.realpath( sys.argv[0]))[-1].split('.')[0]+logdt+".json"
 # print logfile
