@@ -224,6 +224,7 @@ def get_data(url,url_name,sum,file_dt,down_sum):
                 subway=clear.xpath('.//span[@class="subway"]/text()')
                 haskey=clear.xpath('.//span[@class="haskey"]/text()')
                 taxfree=clear.xpath('.//span[@class="taxfree"]/text()')
+
                 if len(subway)!=0:
                     subway= subway[0] ##距离1号线相门站192米
                     clear_dict["subway"] = subway
